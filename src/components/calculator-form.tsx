@@ -15,7 +15,7 @@ import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
-const STEPS = ['Dados de Contato', 'Dados de Consumo', 'Valores Atuais', 'Confirmação'];
+const STEPS = ['Dados de Contato', 'Consumo Mensal', 'Gasto Atual', 'Confirmação'];
 
 const CATEGORY_LABELS: Record<string, string> = {
   limpeza_automatizada: 'Limpeza automatizada',
@@ -27,6 +27,12 @@ const CATEGORY_ICONS: Record<string, string> = {
   limpeza_automatizada: '🧹',
   esterilizacao_vapor: '💨',
   peroxido_hidrogenio: '🧪',
+};
+
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  limpeza_automatizada: 'Testes de cavitação, conectores/lúmen, limpeza de ultrassônica e termodesinfectadora',
+  esterilizacao_vapor: 'Bowie&Dick, integradores, indicadores químicos e biológicos para vapor',
+  peroxido_hidrogenio: 'PCD químico, indicadores químicos e biológicos para peróxido de hidrogênio',
 };
 
 const INSTITUTION_TYPES = [
@@ -51,11 +57,12 @@ export function CalculatorForm() {
 
   const [contactData, setContactData] = useState({
     fullName: '', email: '', whatsapp: '', role: '', institution: '', city: '', state: '',
-    institutionType: '', surgicalRooms: '', hasOwnCME: '', hasTraceability: '', wantsFeedback: 'sim',
+    institutionType: '', sterilizedPackages: '', incubatorCount: '', incubatorType: '',
+    hasOwnCME: '', hasTraceability: '', wantsFeedback: 'sim',
   });
 
   const [consumptionData, setConsumptionData] = useState<Record<string, { quantity: number; category: string }>>({});
-  const [currentValuesData, setCurrentValuesData] = useState<Record<string, { userUnitPrice: number; quantityBought: number; supplier: string; notes: string }>>({});
+  const [globalMonthlySpending, setGlobalMonthlySpending] = useState('');
   const [lgpdConsent, setLgpdConsent] = useState(false);
 
   useEffect(() => {
@@ -71,13 +78,10 @@ export function CalculatorForm() {
         }
         setReferenceItems(items);
         const initialConsumption: Record<string, { quantity: number; category: string }> = {};
-        const initialValues: Record<string, { userUnitPrice: number; quantityBought: number; supplier: string; notes: string }> = {};
         for (const item of items) {
           initialConsumption[item.name] = { quantity: 0, category: item.category };
-          initialValues[item.name] = { userUnitPrice: 0, quantityBought: 0, supplier: '', notes: '' };
         }
         setConsumptionData(initialConsumption);
-        setCurrentValuesData(initialValues);
       } catch {
         toast.error('Erro ao carregar itens de referência');
       }
@@ -93,10 +97,6 @@ export function CalculatorForm() {
     setConsumptionData((prev) => ({ ...prev, [name]: { ...prev[name], quantity } }));
   };
 
-  const updateCurrentValue = (name: string, field: string, value: string | number) => {
-    setCurrentValuesData((prev) => ({ ...prev, [name]: { ...prev[name], [field]: value } }));
-  };
-
   const itemsWithQuantity = Object.entries(consumptionData).filter(([, d]) => d.quantity > 0);
 
   const validateStep = (): boolean => {
@@ -110,11 +110,11 @@ export function CalculatorForm() {
       if (!contactData.institutionType) { toast.error('Selecione o tipo de instituição'); return false; }
     }
     if (step === 1) {
-      if (itemsWithQuantity.length === 0) { toast.error('Informe ao menos um item de consumo'); return false; }
+      if (itemsWithQuantity.length === 0) { toast.error('Selecione ao menos um item de consumo'); return false; }
     }
     if (step === 2) {
-      const hasInvalidPrice = itemsWithQuantity.some(([name]) => (currentValuesData[name]?.userUnitPrice || 0) <= 0);
-      if (hasInvalidPrice) { toast.error('Informe o valor unitário atual para todos os itens selecionados'); return false; }
+      const spending = parseFloat(globalMonthlySpending);
+      if (!globalMonthlySpending || isNaN(spending) || spending <= 0) { toast.error('Informe o valor total mensal gasto com consumíveis'); return false; }
     }
     if (step === 3) {
       if (!lgpdConsent) { toast.error('É necessário aceitar o termo LGPD'); return false; }
@@ -132,7 +132,10 @@ export function CalculatorForm() {
       const calcRes = await fetch('/api/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ consumptionData, currentValuesData }),
+        body: JSON.stringify({
+          consumptionData,
+          globalMonthlySpending: parseFloat(globalMonthlySpending),
+        }),
       });
       const calcData = await calcRes.json();
       if (!calcRes.ok) throw new Error(calcData.error || 'Erro no cálculo');
@@ -142,11 +145,12 @@ export function CalculatorForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           consumptionData,
-          currentValuesData,
+          globalMonthlySpending: parseFloat(globalMonthlySpending),
           itemResults: calcData.itemResults,
           contactData: {
             ...contactData,
-            surgicalRooms: contactData.surgicalRooms ? parseInt(contactData.surgicalRooms) : null,
+            sterilizedPackages: contactData.sterilizedPackages ? parseInt(contactData.sterilizedPackages) : null,
+            incubatorCount: contactData.incubatorCount ? parseInt(contactData.incubatorCount) : null,
             hasOwnCME: contactData.hasOwnCME === 'sim',
             hasTraceability: contactData.hasTraceability === 'sim',
             wantsFeedback: contactData.wantsFeedback === 'sim',
@@ -161,12 +165,14 @@ export function CalculatorForm() {
           fullName: contactData.fullName, email: contactData.email, whatsapp: contactData.whatsapp,
           role: contactData.role, institution: contactData.institution, city: contactData.city,
           state: contactData.state, institutionType: contactData.institutionType,
-          surgicalRooms: contactData.surgicalRooms ? parseInt(contactData.surgicalRooms) : null,
+          sterilizedPackages: contactData.sterilizedPackages ? parseInt(contactData.sterilizedPackages) : null,
+          incubatorCount: contactData.incubatorCount ? parseInt(contactData.incubatorCount) : null,
+          incubatorType: contactData.incubatorType,
           hasOwnCME: contactData.hasOwnCME === 'sim', hasTraceability: contactData.hasTraceability === 'sim',
           wantsFeedback: contactData.wantsFeedback === 'sim', lgpdConsent: true,
         },
         consumptionData,
-        currentValuesData,
+        globalMonthlySpending: parseFloat(globalMonthlySpending),
       };
 
       setCalculatorData(fullData);
@@ -227,7 +233,7 @@ export function CalculatorForm() {
         {step === 0 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
             <Card>
-              <CardHeader><CardTitle>Dados de Contato</CardTitle><CardDescription>Informe seus dados pessoais e da instituição.</CardDescription></CardHeader>
+              <CardHeader><CardTitle>Dados de Contato e Operacionais</CardTitle><CardDescription>Informe seus dados e informações operacionais da CME.</CardDescription></CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2"><Label>Nome completo *</Label><Input placeholder="Seu nome completo" value={contactData.fullName} onChange={(e) => updateContact('fullName', e.target.value)} /></div>
@@ -250,12 +256,41 @@ export function CalculatorForm() {
                       <SelectContent>{BRAZILIAN_STATES.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}</SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2"><Label>Qtd. salas cirúrgicas</Label><Input type="number" placeholder="Opcional" value={contactData.surgicalRooms} onChange={(e) => updateContact('surgicalRooms', e.target.value)} /></div>
                 </div>
-                <div className="space-y-4 pt-2">
-                  <div className="space-y-2"><Label>Possui CME própria?</Label><RadioGroup value={contactData.hasOwnCME} onValueChange={(v) => updateContact('hasOwnCME', v)} className="flex gap-4"><div className="flex items-center gap-2"><RadioGroupItem value="sim" id="cme-sim" /><Label htmlFor="cme-sim">Sim</Label></div><div className="flex items-center gap-2"><RadioGroupItem value="nao" id="cme-nao" /><Label htmlFor="cme-nao">Não</Label></div></RadioGroup></div>
-                  <div className="space-y-2"><Label>Possui sistema de rastreabilidade?</Label><RadioGroup value={contactData.hasTraceability} onValueChange={(v) => updateContact('hasTraceability', v)} className="flex gap-4"><div className="flex items-center gap-2"><RadioGroupItem value="sim" id="trace-sim" /><Label htmlFor="trace-sim">Sim</Label></div><div className="flex items-center gap-2"><RadioGroupItem value="nao" id="trace-nao" /><Label htmlFor="trace-nao">Não</Label></div></RadioGroup></div>
-                  <div className="space-y-2"><Label>Deseja receber devolutiva técnica/comercial?</Label><RadioGroup value={contactData.wantsFeedback} onValueChange={(v) => updateContact('wantsFeedback', v)} className="flex gap-4"><div className="flex items-center gap-2"><RadioGroupItem value="sim" id="fb-sim" /><Label htmlFor="fb-sim">Sim</Label></div><div className="flex items-center gap-2"><RadioGroupItem value="nao" id="fb-nao" /><Label htmlFor="fb-nao">Não</Label></div></RadioGroup></div>
+
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-primary mb-4">Dados Operacionais da CME</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm">Pacotes esterilizados/mês</Label>
+                      <Input type="number" placeholder="Ex: 800" value={contactData.sterilizedPackages} onChange={(e) => updateContact('sterilizedPackages', e.target.value)} />
+                      <p className="text-xs text-muted-foreground">Quantidade média mensal</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm">Quantidade de incubadoras</Label>
+                      <Input type="number" placeholder="Ex: 2" value={contactData.incubatorCount} onChange={(e) => updateContact('incubatorCount', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm">Incubadoras são...</Label>
+                      <Select value={contactData.incubatorType} onValueChange={(v) => updateContact('incubatorType', v)}>
+                        <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="propria">Próprias</SelectItem>
+                          <SelectItem value="comodato">Comodato</SelectItem>
+                          <SelectItem value="nenhuma">Não possuo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-2 border-t">
+                  <p className="text-sm font-medium text-primary mb-2">Infraestrutura</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2"><Label>Possui CME própria?</Label><RadioGroup value={contactData.hasOwnCME} onValueChange={(v) => updateContact('hasOwnCME', v)} className="flex gap-4"><div className="flex items-center gap-2"><RadioGroupItem value="sim" id="cme-sim" /><Label htmlFor="cme-sim">Sim</Label></div><div className="flex items-center gap-2"><RadioGroupItem value="nao" id="cme-nao" /><Label htmlFor="cme-nao">Não</Label></div></RadioGroup></div>
+                    <div className="space-y-2"><Label>Possui sistema de rastreabilidade?</Label><RadioGroup value={contactData.hasTraceability} onValueChange={(v) => updateContact('hasTraceability', v)} className="flex gap-4"><div className="flex items-center gap-2"><RadioGroupItem value="sim" id="trace-sim" /><Label htmlFor="trace-sim">Sim</Label></div><div className="flex items-center gap-2"><RadioGroupItem value="nao" id="trace-nao" /><Label htmlFor="trace-nao">Não</Label></div></RadioGroup></div>
+                    <div className="space-y-2"><Label>Deseja receber devolutiva técnica/comercial?</Label><RadioGroup value={contactData.wantsFeedback} onValueChange={(v) => updateContact('wantsFeedback', v)} className="flex gap-4"><div className="flex items-center gap-2"><RadioGroupItem value="sim" id="fb-sim" /><Label htmlFor="fb-sim">Sim</Label></div><div className="flex items-center gap-2"><RadioGroupItem value="nao" id="fb-nao" /><Label htmlFor="fb-nao">Não</Label></div></RadioGroup></div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -264,16 +299,36 @@ export function CalculatorForm() {
 
         {step === 1 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
-            <Card><CardHeader><CardTitle>Dados de Consumo Mensal</CardTitle><CardDescription>Informe a quantidade mensal consumida de cada item. Deixe em branco (0) os itens que não utiliza.</CardDescription></CardHeader></Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Quais consumíveis você utiliza?</CardTitle>
+                <CardDescription>Informe a quantidade mensal aproximada de cada item que sua CME consome. Deixe em 0 os itens que não utiliza.</CardDescription>
+              </CardHeader>
+            </Card>
             {Object.entries(groupedItems).map(([category, items]) => (
               <Card key={category}>
-                <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><span>{CATEGORY_ICONS[category] || '📦'}</span>{CATEGORY_LABELS[category] || category}</CardTitle></CardHeader>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <span>{CATEGORY_ICONS[category] || '📦'}</span>
+                    {CATEGORY_LABELS[category] || category}
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">{CATEGORY_DESCRIPTIONS[category] || ''}</p>
+                </CardHeader>
                 <CardContent className="space-y-3">
                   {items.map((item) => (
                     <div key={item.name} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                      <div className="flex-1 min-w-0"><Label className="text-sm font-normal">{item.name}</Label></div>
+                      <div className="flex-1 min-w-0">
+                        <Label className="text-sm font-normal">{item.name}</Label>
+                      </div>
                       <div className="flex items-center gap-2 w-full sm:w-40">
-                        <Input type="number" min={0} placeholder="0" value={consumptionData[item.name]?.quantity || ''} onChange={(e) => updateConsumption(item.name, parseInt(e.target.value) || 0)} className="text-right" />
+                        <Input
+                          type="number"
+                          min={0}
+                          placeholder="0"
+                          value={consumptionData[item.name]?.quantity || ''}
+                          onChange={(e) => updateConsumption(item.name, parseInt(e.target.value) || 0)}
+                          className="text-right"
+                        />
                         <span className="text-sm text-muted-foreground whitespace-nowrap">un/mês</span>
                       </div>
                     </div>
@@ -281,47 +336,83 @@ export function CalculatorForm() {
                 </CardContent>
               </Card>
             ))}
+            {itemsWithQuantity.length > 0 && (
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <span className="text-sm font-medium">{itemsWithQuantity.length} item(ns) selecionado(s)</span>
+                  <Badge variant="secondary">{itemsWithQuantity.reduce((sum, [, d]) => sum + d.quantity, 0)} unidades total/mês</Badge>
+                </CardContent>
+              </Card>
+            )}
           </motion.div>
         )}
 
         {step === 2 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
-            <Card><CardHeader><CardTitle>Valores Atuais</CardTitle><CardDescription>Informe o valor unitário que você paga atualmente por cada item selecionado.</CardDescription></CardHeader></Card>
-            {itemsWithQuantity.length === 0 ? (
-              <Card><CardContent className="p-8 text-center text-muted-foreground">Nenhum item com quantidade informada.</CardContent></Card>
-            ) : (
-              Object.entries(groupedItems).map(([category, items]) => {
-                const filteredItems = items.filter((i) => consumptionData[i.name]?.quantity > 0);
-                if (filteredItems.length === 0) return null;
-                return (
-                  <Card key={category}>
-                    <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><span>{CATEGORY_ICONS[category] || '📦'}</span>{CATEGORY_LABELS[category] || category}</CardTitle></CardHeader>
-                    <CardContent className="space-y-6">
-                      {filteredItems.map((item) => (
-                        <div key={item.name} className="space-y-3 p-4 bg-muted/30 rounded-lg">
-                          <div className="flex items-center gap-2"><Label className="font-medium">{item.name}</Label><Badge variant="secondary" className="text-xs">Qtd: {consumptionData[item.name]?.quantity} un/mês</Badge></div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1"><Label className="text-xs text-muted-foreground">Valor unitário atual (R$) *</Label><Input type="number" step="0.01" min={0} placeholder="0,00" value={currentValuesData[item.name]?.userUnitPrice || ''} onChange={(e) => updateCurrentValue(item.name, 'userUnitPrice', parseFloat(e.target.value) || 0)} /></div>
-                            <div className="space-y-1"><Label className="text-xs text-muted-foreground">Custo mensal atual</Label><div className="h-9 flex items-center px-3 rounded-md border bg-muted/50 text-sm font-medium">{formatCurrency((currentValuesData[item.name]?.userUnitPrice || 0) * (consumptionData[item.name]?.quantity || 0))}</div></div>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1"><Label className="text-xs text-muted-foreground">Fornecedor atual</Label><Input placeholder="Nome do fornecedor (opcional)" value={currentValuesData[item.name]?.supplier || ''} onChange={(e) => updateCurrentValue(item.name, 'supplier', e.target.value)} /></div>
-                            <div className="space-y-1"><Label className="text-xs text-muted-foreground">Observação</Label><Input placeholder="Observação (opcional)" value={currentValuesData[item.name]?.notes || ''} onChange={(e) => updateCurrentValue(item.name, 'notes', e.target.value)} /></div>
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
+            <Card>
+              <CardHeader>
+                <CardTitle>Quanto você gasta mensalmente?</CardTitle>
+                <CardDescription>
+                  Informe o valor total que sua instituição gasta por mês com todos os consumíveis de monitoramento da CME (testes, indicadores, BI, etc.). Você não precisa saber o preço unitário de cada item — apenas o valor global mensal.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">Gasto mensal total com consumíveis da CME *</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-semibold text-muted-foreground">R$</span>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min={0}
+                      placeholder="0,00"
+                      value={globalMonthlySpending}
+                      onChange={(e) => setGlobalMonthlySpending(e.target.value)}
+                      className="pl-12 text-2xl font-bold h-14"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Considere todos os consumíveis: Bowie&Dick, indicadores químicos, biológicos, testes de cavitação, conectores, etc.
+                  </p>
+                </div>
+
+                {itemsWithQuantity.length > 0 && (
+                  <div className="border-t pt-4">
+                    <p className="text-sm font-medium text-muted-foreground mb-3">Resumo dos itens selecionados:</p>
+                    <div className="max-h-48 overflow-y-auto rounded border">
+                      <table className="w-full text-sm">
+                        <thead className="bg-muted/50 sticky top-0">
+                          <tr><th className="text-left p-2 font-medium">Item</th><th className="text-right p-2 font-medium">Qtd/mês</th></tr>
+                        </thead>
+                        <tbody>
+                          {itemsWithQuantity.map(([name, data]) => (
+                            <tr key={name} className="border-t">
+                              <td className="p-2">{name}</td>
+                              <td className="text-right p-2 font-medium">{data.quantity}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                <Card className="bg-amber-50 border-amber-200">
+                  <CardContent className="p-4">
+                    <p className="text-sm text-amber-800">
+                      💡 <strong>Dica:</strong> Se você não souber o valor exato, pode consultar a nota fiscal mensal do fornecedor ou o setor de compras da sua instituição. Uma estimativa próxima já é suficiente para a simulação.
+                    </p>
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
           </motion.div>
         )}
 
         {step === 3 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
             <Card>
-              <CardHeader><CardTitle>Resumo e Confirmação</CardTitle><CardDescription>Revise os dados antes de gerar o resultado.</CardDescription></CardHeader>
+              <CardHeader><CardTitle>Resumo e Confirmação</CardTitle><CardDescription>Revise os dados antes de gerar o resultado da simulação.</CardDescription></CardHeader>
               <CardContent className="space-y-6">
                 <div>
                   <h3 className="font-semibold text-sm mb-3 text-primary">Dados de Contato</h3>
@@ -336,21 +427,34 @@ export function CalculatorForm() {
                     <div><span className="text-muted-foreground">Rastreabilidade:</span> {contactData.hasTraceability === 'sim' ? 'Sim' : contactData.hasTraceability === 'nao' ? 'Não' : '—'}</div>
                   </div>
                 </div>
+
+                <div>
+                  <h3 className="font-semibold text-sm mb-3 text-primary">Dados Operacionais</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+                    <div><span className="text-muted-foreground">Pacotes esterilizados/mês:</span> {contactData.sterilizedPackages || '—'}</div>
+                    <div><span className="text-muted-foreground">Incubadoras:</span> {contactData.incubatorCount || '0'} ({contactData.incubatorType === 'propria' ? 'Próprias' : contactData.incubatorType === 'comodato' ? 'Comodato' : contactData.incubatorType || '—'})</div>
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="font-semibold text-sm mb-3 text-primary">Itens Selecionados ({itemsWithQuantity.length})</h3>
-                  <div className="max-h-64 overflow-y-auto rounded border">
+                  <div className="max-h-48 overflow-y-auto rounded border">
                     <table className="w-full text-sm">
-                      <thead className="bg-muted/50 sticky top-0"><tr><th className="text-left p-2 font-medium">Item</th><th className="text-right p-2 font-medium">Qtd</th><th className="text-right p-2 font-medium">Valor unit.</th><th className="text-right p-2 font-medium">Custo mensal</th></tr></thead>
+                      <thead className="bg-muted/50 sticky top-0"><tr><th className="text-left p-2 font-medium">Item</th><th className="text-right p-2 font-medium">Qtd/mês</th></tr></thead>
                       <tbody>
-                        {itemsWithQuantity.map(([name]) => {
-                          const qty = consumptionData[name].quantity;
-                          const unitPrice = currentValuesData[name]?.userUnitPrice || 0;
-                          return (<tr key={name} className="border-t"><td className="p-2">{name}</td><td className="text-right p-2">{qty}</td><td className="text-right p-2">{formatCurrency(unitPrice)}</td><td className="text-right p-2 font-medium">{formatCurrency(qty * unitPrice)}</td></tr>);
-                        })}
+                        {itemsWithQuantity.map(([name, data]) => (
+                          <tr key={name} className="border-t"><td className="p-2">{name}</td><td className="text-right p-2">{data.quantity}</td></tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
                 </div>
+
+                <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-primary">Gasto mensal informado</p>
+                  <p className="text-2xl font-bold text-primary mt-1">{formatCurrency(parseFloat(globalMonthlySpending) || 0)}</p>
+                </div>
+
                 <div className="bg-muted/50 p-4 rounded-lg space-y-3">
                   <div className="flex items-start gap-2">
                     <Checkbox id="lgpd" checked={lgpdConsent} onCheckedChange={(v) => setLgpdConsent(v === true)} className="mt-0.5" />

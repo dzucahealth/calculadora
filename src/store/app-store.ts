@@ -23,14 +23,16 @@ export interface CalculatorData {
     city: string;
     state: string;
     institutionType: string;
-    surgicalRooms: number | null;
+    sterilizedPackages: number | null;
+    incubatorCount: number | null;
+    incubatorType: string;
     hasOwnCME: boolean;
     hasTraceability: boolean;
     wantsFeedback: boolean;
     lgpdConsent: boolean;
   };
   consumptionData: Record<string, { quantity: number; category: string }>;
-  currentValuesData: Record<string, { userUnitPrice: number; quantityBought?: number; supplier?: string; notes?: string }>;
+  globalMonthlySpending: number;
 }
 
 export interface CalculationResult {
@@ -38,12 +40,8 @@ export interface CalculationResult {
     name: string;
     category: string;
     quantity: number;
-    userUnitPrice: number;
     refUnitPrice: number;
-    currentCost: number;
-    cmeCost: number;
-    saving: number;
-    savingPercentage: number;
+    estimatedCost: number;
   }>;
   totalCurrentCost: number;
   totalCMECost: number;

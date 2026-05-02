@@ -9,10 +9,10 @@ import { TrendingDown, TrendingUp, DollarSign, BarChart3, RotateCcw, FileDown, P
 import Image from 'next/image';
 
 const CLASS_LABELS: Record<string, { label: string; color: string; description: string }> = {
-  baixa: { label: 'Baixa Oportunidade', color: 'bg-gray-100 text-gray-700', description: '' },
-  media: { label: 'Média Oportunidade', color: 'bg-yellow-100 text-yellow-700', description: 'Identificamos oportunidades moderadas de otimização nos seus custos com consumíveis.' },
-  alta: { label: 'Alta Oportunidade', color: 'bg-green-100 text-green-700', description: 'Excelente! Identificamos uma oportunidade significativa de economia. Nossa equipe pode apresentar uma proposta personalizada para maximizar seus resultados.' },
-  estrategica: { label: 'Oportunidade Estratégica', color: 'bg-emerald-100 text-emerald-700', description: 'Potencial excepcional de economia! Recomendamos uma reunião imediata com nossa equipe para estruturar uma parceria estratégica de longo prazo.' },
+  baixa: { label: 'Baixa Oportunidade', color: 'bg-gray-100 text-gray-700', description: 'Identificamos oportunidades limitadas com base nos dados informados. Mesmo assim, a padronização de processos e a inclusão de soluções de rastreabilidade podem trazer ganhos indiretos significativos para a sua instituição. A equipe CME INTELIGENTE pode avaliar seu cenário completo e identificar pontos de melhoria que vão além dos consumíveis.' },
+  media: { label: 'Média Oportunidade', color: 'bg-yellow-100 text-yellow-700', description: 'Identificamos oportunidades moderadas de otimização nos seus custos com consumíveis de monitoramento da CME. Além da economia direta, podemos apresentar soluções complementares como rastreabilidade, padronização de processos e gestão inteligente de estoque que potencializam ainda mais os resultados.' },
+  alta: { label: 'Alta Oportunidade', color: 'bg-green-100 text-green-700', description: 'Excelente! Identificamos uma oportunidade significativa de economia nos consumíveis da sua CME. Nossa equipe técnica pode realizar uma avaliação detalhada do seu cenário e apresentar uma proposta personalizada que inclui economia direta, padronização e soluções complementares como rastreabilidade e equipamentos de apoio.' },
+  estrategica: { label: 'Oportunidade Estratégica', color: 'bg-emerald-100 text-emerald-700', description: 'Potencial excepcional de economia identificado! Com base no volume de processamento e nos valores informados, sua instituição se enquadra em um cenário de parceria estratégica. Recomendamos uma reunião imediata com nossa equipe para estruturar uma proposta completa que inclua economia em consumíveis, sistema de rastreabilidade, equipamentos de apoio e condições comerciais exclusivas.' },
 };
 
 export function ResultsPage() {
@@ -63,6 +63,7 @@ export function ResultsPage() {
           th { background: #f0fdfa; padding: 8px; text-align: left; border-bottom: 2px solid #0d9488; }
           td { padding: 8px; border-bottom: 1px solid #eee; }
           .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
+          .disclaimer { background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 12px; color: #92400e; }
           @media print { body { padding: 20px; } }
         </style>
       </head>
@@ -70,7 +71,7 @@ export function ResultsPage() {
         <div class="header">
           <h1>CME INTELIGENTE</h1>
           <p>Calculadora Inteligente de Consumíveis da CME</p>
-          <p style="margin-top: 10px;">Relatório de Simulação - ${new Date().toLocaleDateString('pt-BR')}</p>
+          <p style="margin-top: 10px;">Relatório de Simulação — ${new Date().toLocaleDateString('pt-BR')}</p>
         </div>
         ${contact ? `<div class="contact-info"><h2>Dados do Contato</h2><div class="contact-grid">
           <div><strong>Nome:</strong> ${contact.fullName}</div>
@@ -78,28 +79,33 @@ export function ResultsPage() {
           <div><strong>WhatsApp:</strong> ${contact.whatsapp}</div>
           <div><strong>Instituição:</strong> ${contact.institution}</div>
           <div><strong>Cidade/UF:</strong> ${contact.city}/${contact.state}</div>
+          ${contact.sterilizedPackages ? `<div><strong>Pacotes/mês:</strong> ${contact.sterilizedPackages}</div>` : ''}
+          ${contact.incubatorCount ? `<div><strong>Incubadoras:</strong> ${contact.incubatorCount} (${contact.incubatorType === 'propria' ? 'Próprias' : contact.incubatorType === 'comodato' ? 'Comodato' : '—'})</div>` : ''}
         </div></div>` : ''}
         <div class="summary">
-          <div class="card"><div class="card-label">Custo Mensal Atual</div><div class="card-value">${formatCurrency(result.totalCurrentCost)}</div></div>
+          <div class="card"><div class="card-label">Gasto Mensal Informado</div><div class="card-value">${formatCurrency(result.totalCurrentCost)}</div></div>
           <div class="card"><div class="card-label">Custo Estimado CME INTELIGENTE</div><div class="card-value">${formatCurrency(result.totalCMECost)}</div></div>
-          <div class="card"><div class="card-label">Economia Mensal</div><div class="card-value positive">${formatCurrency(result.totalSaving)}</div></div>
+          <div class="card"><div class="card-label">Economia Mensal Estimada</div><div class="card-value positive">${formatCurrency(result.totalSaving)}</div></div>
           <div class="card"><div class="card-label">Economia Anual Estimada</div><div class="card-value positive">${formatCurrency(annualSaving)}</div></div>
         </div>
+        ${hasSavings ? `<p style="font-size: 14px; color: #059669; font-weight: bold; margin-bottom: 15px;">Economia de ${result.savingPercentage.toFixed(1)}% identificada</p>` : ''}
         <table>
-          <thead><tr><th>Item</th><th style="text-align:right">Qtd</th><th style="text-align:right">Valor Atual</th><th style="text-align:right">Valor CME</th><th style="text-align:right">Economia</th></tr></thead>
+          <thead><tr><th>Item</th><th style="text-align:right">Qtd/mês</th><th style="text-align:right">Valor Ref. CME</th><th style="text-align:right">Custo Estimado</th></tr></thead>
           <tbody>
             ${result.itemResults.map((item) => `<tr>
               <td>${item.name}</td>
               <td style="text-align:right">${item.quantity}</td>
-              <td style="text-align:right">${formatCurrency(item.userUnitPrice)}</td>
               <td style="text-align:right">${formatCurrency(item.refUnitPrice)}</td>
-              <td style="text-align:right; color: ${item.saving > 0 ? '#059669' : '#999'}">${formatCurrency(item.saving)}</td>
+              <td style="text-align:right">${formatCurrency(item.estimatedCost)}</td>
             </tr>`).join('')}
           </tbody>
         </table>
         ${result.suggestedOffer ? `<div class="card" style="background: #f0fdfa; border: 1px solid #0d9488; margin-top: 20px;"><div class="card-label" style="color: #0d9488; font-weight: bold;">Oferta Sugerida</div><p style="margin-top: 8px; font-size: 14px;">${result.suggestedOffer}</p></div>` : ''}
+        <div class="disclaimer">
+          <strong>Importante:</strong> Esta simulação apresenta uma estimativa preliminar de consumo e oportunidade de otimização em testes e indicadores para CME. A análise definitiva depende da validação técnica da rotina, protocolos internos, equipamentos utilizados, perfil de carga e condições comerciais aplicáveis. A equipe CME INTELIGENTE poderá realizar uma devolutiva técnica para discutir oportunidades de economia, padronização, rastreabilidade e melhoria de controle de processo.
+        </div>
         <div class="footer">
-          <p>CME INTELIGENTE - Gestão Inteligente de Esterilização</p>
+          <p>CME INTELIGENTE — Gestão Inteligente de Esterilização</p>
           <p>Este relatório é confidencial e destinado exclusivamente ao destinatário.</p>
           <p>Gerado em ${new Date().toLocaleString('pt-BR')}</p>
         </div>
@@ -141,14 +147,14 @@ export function ResultsPage() {
             <Card>
               <CardContent className="p-4 text-center">
                 <DollarSign className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-xs text-muted-foreground mb-1">Custo Mensal Atual</p>
+                <p className="text-xs text-muted-foreground mb-1">Gasto Mensal Informado</p>
                 <p className="text-xl font-bold">{formatCurrency(result.totalCurrentCost)}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <BarChart3 className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-xs text-muted-foreground mb-1">Custo CME INTELIGENTE</p>
+                <p className="text-xs text-muted-foreground mb-1">Custo Estimado CME</p>
                 <p className="text-xl font-bold">{formatCurrency(result.totalCMECost)}</p>
               </CardContent>
             </Card>
@@ -179,34 +185,34 @@ export function ResultsPage() {
           )}
 
           {/* Commercial message */}
-          {hasSavings ? (
-            <Card>
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="font-semibold text-lg mb-3">Análise da Oportunidade</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{classInfo.description}</p>
+              {result.suggestedOffer && (
+                <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                  <p className="text-sm font-medium text-primary mb-1">Oferta Especial:</p>
+                  <p className="text-sm">{result.suggestedOffer}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Disclaimer when no savings */}
+          {!hasSavings && (
+            <Card className="bg-amber-50 border-amber-200">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-3">Análise da Oportunidade</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{classInfo.description}</p>
-                {result.suggestedOffer && (
-                  <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                    <p className="text-sm font-medium text-primary mb-1">Oferta Especial:</p>
-                    <p className="text-sm">{result.suggestedOffer}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-3">Análise da Oportunidade</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Não foi identificada economia direta nos itens informados com base nos valores atuais. Porém, a CME INTELIGENTE pode oferecer benefícios como: rastreabilidade automatizada, suporte técnico especializado, gestão de estoque inteligente e condições comerciais diferenciadas. Entre em contato para uma avaliação personalizada.
+                <p className="text-sm text-amber-800 leading-relaxed">
+                  A simulação não identificou economia direta relevante apenas na comparação de consumíveis com base nos valores informados. Ainda assim, pode haver oportunidade de ganho por padronização, rastreabilidade, redução de perdas, melhor gestão de estoque, controle de validade e aumento da segurança do processo. Entre em contato para uma avaliação personalizada da equipe CME INTELIGENTE.
                 </p>
               </CardContent>
             </Card>
           )}
 
-          {/* Items breakdown */}
+          {/* Items breakdown - estimated CME costs */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Detalhamento por Item</CardTitle>
+              <CardTitle className="text-base">Estimativa de Custo por Item (Referência CME INTELIGENTE)</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -214,10 +220,9 @@ export function ResultsPage() {
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-2 pr-4 font-medium">Item</th>
-                      <th className="text-right py-2 px-2 font-medium">Qtd</th>
-                      <th className="text-right py-2 px-2 font-medium">Valor Atual</th>
-                      <th className="text-right py-2 px-2 font-medium">Valor CME</th>
-                      <th className="text-right py-2 pl-2 font-medium">Economia</th>
+                      <th className="text-right py-2 px-2 font-medium">Qtd/mês</th>
+                      <th className="text-right py-2 px-2 font-medium">Valor Ref.</th>
+                      <th className="text-right py-2 pl-2 font-medium">Custo Estimado</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -225,11 +230,8 @@ export function ResultsPage() {
                       <tr key={item.name} className="border-t">
                         <td className="py-3 pr-4">{item.name}</td>
                         <td className="text-right py-3 px-2">{item.quantity}</td>
-                        <td className="text-right py-3 px-2">{formatCurrency(item.userUnitPrice)}</td>
                         <td className="text-right py-3 px-2">{formatCurrency(item.refUnitPrice)}</td>
-                        <td className={`text-right py-3 pl-2 font-medium ${item.saving > 0 ? 'text-green-600' : 'text-muted-foreground'}`}>
-                          {item.saving > 0 ? formatCurrency(item.saving) : '—'}
-                        </td>
+                        <td className="text-right py-3 pl-2 font-medium">{formatCurrency(item.estimatedCost)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -238,33 +240,14 @@ export function ResultsPage() {
             </CardContent>
           </Card>
 
-          {/* Top savings items */}
-          {result.itemResults.filter((i) => i.saving > 0).length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Maiores Oportunidades de Economia</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {result.itemResults
-                  .filter((i) => i.saving > 0)
-                  .sort((a, b) => b.saving - a.saving)
-                  .slice(0, 5)
-                  .map((item, index) => (
-                    <div key={item.name} className="flex items-center justify-between py-2 border-b last:border-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
-                          {index + 1}
-                        </div>
-                        <span className="text-sm">{item.name}</span>
-                      </div>
-                      <Badge variant="secondary" className="bg-green-100 text-green-700">
-                        {formatCurrency(item.saving)}/mês
-                      </Badge>
-                    </div>
-                  ))}
-              </CardContent>
-            </Card>
-          )}
+          {/* Final disclaimer */}
+          <Card className="bg-muted/50">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong>Importante:</strong> Esta simulação apresenta uma estimativa preliminar de consumo e oportunidade de otimização em testes e indicadores para CME. A análise definitiva depende da validação técnica da rotina, protocolos internos, equipamentos utilizados, perfil de carga e condições comerciais aplicáveis. A equipe CME INTELIGENTE poderá realizar uma devolutiva técnica para discutir oportunidades de economia, padronização, rastreabilidade e melhoria de controle de processo.
+              </p>
+            </CardContent>
+          </Card>
 
           {/* Action buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

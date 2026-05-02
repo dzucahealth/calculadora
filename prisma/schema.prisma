@@ -28,7 +28,9 @@ model Lead {
   city                  String
   state                 String
   institutionType       String   // hospital, clinica, hospital_dia, processadora, maternidade, odontologia, outro
-  surgicalRooms         Int?
+  sterilizedPackages    Int?     // quantidade de pacotes esterilizados por mês
+  incubatorCount        Int?     // quantidade de incubadoras
+  incubatorType         String?  // propria, comodato, nenhuma
   hasOwnCME             Boolean  @default(false)
   hasTraceability       Boolean  @default(false)
   wantsFeedback         Boolean  @default(true)

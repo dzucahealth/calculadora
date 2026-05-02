@@ -23,7 +23,9 @@ interface LeadDetail {
   city: string;
   state: string;
   institutionType: string;
-  surgicalRooms: number | null;
+  sterilizedPackages: number | null;
+  incubatorCount: number | null;
+  incubatorType: string | null;
   hasOwnCME: boolean;
   hasTraceability: boolean;
   wantsFeedback: boolean;
@@ -181,7 +183,7 @@ export function AdminLeadDetail() {
 
   const handlePrintReport = () => {
     if (!lead) return;
-    let itemResults: Array<{ name: string; quantity: number; userUnitPrice: number; refUnitPrice: number; currentCost: number; cmeCost: number; saving: number }> = [];
+    let itemResults: Array<{ name: string; quantity: number; refUnitPrice: number; estimatedCost: number }> = [];
     try { itemResults = JSON.parse(lead.itemResultsData); } catch { /* empty */ }
 
     const w = window.open('', '_blank');
@@ -191,24 +193,24 @@ export function AdminLeadDetail() {
     h1{color:#0d9488;font-size:20px;margin-bottom:20px}h2{color:#0d9488;font-size:16px;margin:20px 0 10px}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}.section{margin:20px 0}
     table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}th{background:#f0fdfa;padding:8px;text-align:left;border-bottom:2px solid #0d9488}
-    td{padding:8px;border-bottom:1px solid #eee}.badge{padding:2px 8px;border-radius:4px;font-size:11px}
-    .green{color:#059669}.footer{margin-top:40px;text-align:center;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:15px}</style></head>
+    td{padding:8px;border-bottom:1px solid #eee}.green{color:#059669}.footer{margin-top:40px;text-align:center;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:15px}</style></head>
     <body><h1>Relatório Interno - Lead #${lead.id.slice(-6)}</h1>
     <div class="grid"><div><strong>Nome:</strong> ${lead.fullName}</div><div><strong>E-mail:</strong> ${lead.email}</div>
     <div><strong>WhatsApp:</strong> ${lead.whatsapp}</div><div><strong>Instituição:</strong> ${lead.institution}</div>
     <div><strong>Cidade/UF:</strong> ${lead.city}/${lead.state}</div><div><strong>Tipo:</strong> ${INSTITUTION_LABELS[lead.institutionType] || lead.institutionType}</div>
+    <div><strong>Pacotes esterilizados/mês:</strong> ${lead.sterilizedPackages || '—'}</div><div><strong>Incubadoras:</strong> ${lead.incubatorCount || '0'} (${lead.incubatorType === 'propria' ? 'Próprias' : lead.incubatorType === 'comodato' ? 'Comodato' : lead.incubatorType || '—'})</div>
     <div><strong>CME própria:</strong> ${lead.hasOwnCME ? 'Sim' : 'Não'}</div><div><strong>Rastreabilidade:</strong> ${lead.hasTraceability ? 'Sim' : 'Não'}</div></div>
     <div class="section"><h2>Resumo Financeiro</h2>
-    <div class="grid"><div><strong>Custo Atual:</strong> ${formatCurrency(lead.currentTotalCost)}</div>
-    <div><strong>Custo CME:</strong> ${formatCurrency(lead.cmeTotalCost)}</div>
-    <div><strong>Economia:</strong> <span class="green">${formatCurrency(lead.estimatedSaving)}</span></div>
+    <div class="grid"><div><strong>Gasto mensal informado:</strong> ${formatCurrency(lead.currentTotalCost)}</div>
+    <div><strong>Custo estimado CME:</strong> ${formatCurrency(lead.cmeTotalCost)}</div>
+    <div><strong>Economia estimada:</strong> <span class="green">${formatCurrency(lead.estimatedSaving)}</span></div>
     <div><strong>% Economia:</strong> <span class="green">${lead.savingPercentage.toFixed(1)}%</span></div></div>
     ${lead.suggestedOffer ? `<p style="margin-top:10px"><strong>Oferta sugerida:</strong> ${lead.suggestedOffer}</p>` : ''}</div>
     <div class="section"><h2>Detalhamento por Item</h2>
-    <table><thead><tr><th>Item</th><th style="text-align:right">Qtd</th><th style="text-align:right">Vl. Atual</th><th style="text-align:right">Vl. CME</th><th style="text-align:right">Economia</th></tr></thead>
-    <tbody>${itemResults.map((i) => `<tr><td>${i.name}</td><td style="text-align:right">${i.quantity}</td><td style="text-align:right">${formatCurrency(i.userUnitPrice)}</td><td style="text-align:right">${formatCurrency(i.refUnitPrice)}</td><td style="text-align:right" class="green">${formatCurrency(i.saving)}</td></tr>`).join('')}</tbody></table></div>
+    <table><thead><tr><th>Item</th><th style="text-align:right">Qtd/mês</th><th style="text-align:right">Valor Ref. CME</th><th style="text-align:right">Custo Estimado</th></tr></thead>
+    <tbody>${itemResults.map((i) => `<tr><td>${i.name}</td><td style="text-align:right">${i.quantity}</td><td style="text-align:right">${formatCurrency(i.refUnitPrice)}</td><td style="text-align:right">${formatCurrency(i.estimatedCost)}</td></tr>`).join('')}</tbody></table></div>
     ${lead.internalNotes ? `<div class="section"><h2>Notas Internas</h2><p style="font-size:13px">${lead.internalNotes}</p></div>` : ''}
-    <div class="footer"><p>CME INTELIGENTE - Relatório Interno | Gerado em ${new Date().toLocaleString('pt-BR')}</p></div></body></html>`);
+    <div class="footer"><p>CME INTELIGENTE - Uso Interno | Gerado em ${new Date().toLocaleString('pt-BR')}</p></div></body></html>`);
     w.document.close();
     setTimeout(() => w.print(), 500);
   };
@@ -221,7 +223,7 @@ export function AdminLeadDetail() {
     return <Card><CardContent className="p-8 text-center text-muted-foreground">Lead não encontrado.</CardContent></Card>;
   }
 
-  let itemResults: Array<{ name: string; quantity: number; userUnitPrice: number; refUnitPrice: number; currentCost: number; cmeCost: number; saving: number }> = [];
+  let itemResults: Array<{ name: string; quantity: number; refUnitPrice: number; estimatedCost: number }> = [];
   try { itemResults = JSON.parse(lead.itemResultsData); } catch { /* empty */ }
 
   return (
@@ -258,7 +260,8 @@ export function AdminLeadDetail() {
               <div><span className="text-muted-foreground">Instituição:</span> {lead.institution}</div>
               <div><span className="text-muted-foreground">Tipo:</span> {INSTITUTION_LABELS[lead.institutionType] || lead.institutionType}</div>
               <div><span className="text-muted-foreground">Cidade/UF:</span> {lead.city}/{lead.state}</div>
-              <div><span className="text-muted-foreground">Salas cirúrgicas:</span> {lead.surgicalRooms || '—'}</div>
+              <div><span className="text-muted-foreground">Pacotes esterilizados/mês:</span> {lead.sterilizedPackages || '—'}</div>
+              <div><span className="text-muted-foreground">Incubadoras:</span> {lead.incubatorCount || '0'} ({lead.incubatorType === 'propria' ? 'Próprias' : lead.incubatorType === 'comodato' ? 'Comodato' : lead.incubatorType || '—'})</div>
               <div><span className="text-muted-foreground">CME própria:</span> {lead.hasOwnCME ? 'Sim' : 'Não'}</div>
               <div><span className="text-muted-foreground">Rastreabilidade:</span> {lead.hasTraceability ? 'Sim' : 'Não'}</div>
               <div><span className="text-muted-foreground">Deseja devolutiva:</span> {lead.wantsFeedback ? 'Sim' : 'Não'}</div>
@@ -298,11 +301,11 @@ export function AdminLeadDetail() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="text-center p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground">Custo Atual</p>
+              <p className="text-xs text-muted-foreground">Gasto Mensal Informado</p>
               <p className="text-lg font-bold">{formatCurrency(lead.currentTotalCost)}</p>
             </div>
             <div className="text-center p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground">Custo CME</p>
+              <p className="text-xs text-muted-foreground">Custo Estimado CME</p>
               <p className="text-lg font-bold">{formatCurrency(lead.cmeTotalCost)}</p>
             </div>
             <div className="text-center p-3 bg-green-50 rounded-lg">
@@ -334,19 +337,17 @@ export function AdminLeadDetail() {
               <table className="w-full text-sm">
                 <thead className="sticky top-0"><tr className="border-b bg-muted/50">
                   <th className="text-left py-2 px-2 font-medium">Item</th>
-                  <th className="text-right py-2 px-2 font-medium">Qtd</th>
-                  <th className="text-right py-2 px-2 font-medium">Vl. Atual</th>
-                  <th className="text-right py-2 px-2 font-medium">Vl. CME</th>
-                  <th className="text-right py-2 px-2 font-medium">Economia</th>
+                  <th className="text-right py-2 px-2 font-medium">Qtd/mês</th>
+                  <th className="text-right py-2 px-2 font-medium">Valor Ref. CME</th>
+                  <th className="text-right py-2 px-2 font-medium">Custo Estimado</th>
                 </tr></thead>
                 <tbody>
                   {itemResults.map((item) => (
                     <tr key={item.name} className="border-t">
                       <td className="py-2 px-2">{item.name}</td>
                       <td className="text-right py-2 px-2">{item.quantity}</td>
-                      <td className="text-right py-2 px-2">{formatCurrency(item.userUnitPrice)}</td>
                       <td className="text-right py-2 px-2">{formatCurrency(item.refUnitPrice)}</td>
-                      <td className={`text-right py-2 px-2 font-medium ${item.saving > 0 ? 'text-green-600' : ''}`}>{formatCurrency(item.saving)}</td>
+                      <td className="text-right py-2 px-2 font-medium">{formatCurrency(item.estimatedCost)}</td>
                     </tr>
                   ))}
                 </tbody>

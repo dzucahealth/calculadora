@@ -4,7 +4,9 @@ import { db } from '@/lib/db';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { consumptionData, currentValuesData } = body;
+    const { consumptionData, globalMonthlySpending } = body;
+
+    const totalCurrentCost = globalMonthlySpending || 0;
 
     // Fetch reference prices
     const referenceItems = await db.referenceItem.findMany({
@@ -20,20 +22,15 @@ export async function POST(request: Request) {
       };
     }
 
-    // Calculate results for each item
+    // Calculate CME estimated cost for each item
     const itemResults: Array<{
       name: string;
       category: string;
       quantity: number;
-      userUnitPrice: number;
       refUnitPrice: number;
-      currentCost: number;
-      cmeCost: number;
-      saving: number;
-      savingPercentage: number;
+      estimatedCost: number;
     }> = [];
 
-    let totalCurrentCost = 0;
     let totalCMECost = 0;
 
     for (const [itemName, data] of Object.entries(consumptionData)) {
@@ -41,33 +38,18 @@ export async function POST(request: Request) {
       const qty = itemData.quantity || 0;
       if (qty <= 0) continue;
 
-      const valueData = (currentValuesData[itemName] || {}) as {
-        userUnitPrice?: number;
-        quantityBought?: number;
-      };
-      const userPrice = valueData.userUnitPrice || 0;
       const ref = refMap[itemName];
-
       if (!ref) continue;
 
-      const currentCost = qty * userPrice;
-      const cmeCost = qty * ref.refPrice;
-      const saving = currentCost - cmeCost;
-      const savingPct = currentCost > 0 ? (saving / currentCost) * 100 : 0;
-
-      totalCurrentCost += currentCost;
-      totalCMECost += cmeCost;
+      const estimatedCost = qty * ref.refPrice;
+      totalCMECost += estimatedCost;
 
       itemResults.push({
         name: itemName,
         category: itemData.category,
         quantity: qty,
-        userUnitPrice: userPrice,
         refUnitPrice: ref.refPrice,
-        currentCost: parseFloat(currentCost.toFixed(2)),
-        cmeCost: parseFloat(cmeCost.toFixed(2)),
-        saving: parseFloat(saving.toFixed(2)),
-        savingPercentage: parseFloat(savingPct.toFixed(2)),
+        estimatedCost: parseFloat(estimatedCost.toFixed(2)),
       });
     }
 
@@ -93,15 +75,15 @@ export async function POST(request: Request) {
       }
     }
 
-    // Sort items by saving impact
-    itemResults.sort((a, b) => b.saving - a.saving);
+    // Sort items by estimated cost impact
+    itemResults.sort((a, b) => b.estimatedCost - a.estimatedCost);
 
     return NextResponse.json({
       itemResults,
       totalCurrentCost: parseFloat(totalCurrentCost.toFixed(2)),
       totalCMECost: parseFloat(totalCMECost.toFixed(2)),
       totalSaving: parseFloat(Math.max(0, totalSaving).toFixed(2)),
-      savingPercentage: parseFloat(savingPct.toFixed(2)),
+      savingPercentage: parseFloat(Math.max(0, savingPct).toFixed(2)),
       opportunityClass,
       suggestedOffer,
     });

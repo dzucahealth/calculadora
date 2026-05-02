@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { validateToken } from '@/lib/auth';
 
-// Helper to verify admin token
 function getAdmin(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) return null;
@@ -14,43 +13,32 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Calculate savings
-    const { consumptionData, currentValuesData, itemResults, contactData } = body;
+    const { consumptionData, globalMonthlySpending, itemResults, contactData } = body;
 
-    let currentTotalCost = 0;
+    const totalCurrentCost = globalMonthlySpending || 0;
     let cmeTotalCost = 0;
-    let estimatedSaving = 0;
-    let savingPercentage = 0;
-    let opportunityClass = 'baixa';
 
     if (itemResults && itemResults.length > 0) {
       for (const item of itemResults) {
-        currentTotalCost += item.currentCost || 0;
-        cmeTotalCost += item.cmeCost || 0;
-      }
-      estimatedSaving = currentTotalCost - cmeTotalCost;
-      savingPercentage = currentTotalCost > 0 ? (estimatedSaving / currentTotalCost) * 100 : 0;
-
-      // Classification
-      if (estimatedSaving > 10000) {
-        opportunityClass = 'estrategica';
-      } else if (estimatedSaving > 5000) {
-        opportunityClass = 'alta';
-      } else if (estimatedSaving > 2000) {
-        opportunityClass = 'media';
-      } else {
-        opportunityClass = 'baixa';
+        cmeTotalCost += item.estimatedCost || 0;
       }
     }
+
+    const estimatedSaving = totalCurrentCost - cmeTotalCost;
+    const savingPercentage = totalCurrentCost > 0 ? (estimatedSaving / totalCurrentCost) * 100 : 0;
+
+    // Classification
+    let opportunityClass = 'baixa';
+    if (estimatedSaving > 10000) opportunityClass = 'estrategica';
+    else if (estimatedSaving > 5000) opportunityClass = 'alta';
+    else if (estimatedSaving > 2000) opportunityClass = 'media';
 
     // Find matching offer rule
     const offerRules = await db.offerRule.findMany({ where: { showToUser: true } });
     let suggestedOffer = '';
     for (const rule of offerRules) {
       if (rule.maxRange === 0) {
-        if (cmeTotalCost >= rule.minRange) {
-          suggestedOffer = rule.benefit;
-        }
+        if (cmeTotalCost >= rule.minRange) suggestedOffer = rule.benefit;
       } else {
         if (cmeTotalCost >= rule.minRange && cmeTotalCost <= rule.maxRange) {
           suggestedOffer = rule.benefit;
@@ -69,19 +57,21 @@ export async function POST(request: NextRequest) {
         city: contactData.city || '',
         state: contactData.state || '',
         institutionType: contactData.institutionType || 'outro',
-        surgicalRooms: contactData.surgicalRooms || null,
+        sterilizedPackages: contactData.sterilizedPackages || null,
+        incubatorCount: contactData.incubatorCount || null,
+        incubatorType: contactData.incubatorType || null,
         hasOwnCME: contactData.hasOwnCME || false,
         hasTraceability: contactData.hasTraceability || false,
         wantsFeedback: contactData.wantsFeedback !== false,
         lgpdConsent: true,
-        currentTotalCost: parseFloat(currentTotalCost.toFixed(2)),
+        currentTotalCost: parseFloat(totalCurrentCost.toFixed(2)),
         cmeTotalCost: parseFloat(cmeTotalCost.toFixed(2)),
         estimatedSaving: parseFloat(Math.max(0, estimatedSaving).toFixed(2)),
-        savingPercentage: parseFloat(savingPercentage.toFixed(2)),
+        savingPercentage: parseFloat(Math.max(0, savingPercentage).toFixed(2)),
         opportunityClass,
         suggestedOffer,
         consumptionData: JSON.stringify(consumptionData || {}),
-        currentValuesData: JSON.stringify(currentValuesData || {}),
+        currentValuesData: JSON.stringify({ globalMonthlySpending: totalCurrentCost }),
         itemResultsData: JSON.stringify(itemResults || []),
       },
     });
