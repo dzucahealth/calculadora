@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id                    String   @id @default(cuid())
+  // Dados de contato
+  fullName              String
+  email                 String
+  whatsapp              String
+  role                  String
+  institution           String
+  city                  String
+  state                 String
+  institutionType       String   // hospital, clinica, hospital_dia, processadora, maternidade, odontologia, outro
+  surgicalRooms         Int?
+  hasOwnCME             Boolean  @default(false)
+  hasTraceability       Boolean  @default(false)
+  wantsFeedback         Boolean  @default(true)
+  lgpdConsent           Boolean  @default(false)
+  // Metadados
+  ipAddress             String?
+  utmSource             String?
+  utmMedium             String?
+  utmCampaign           String?
+  userAgent             String?
+  referrer              String?
+  calculatorVersion     String   @default("1.0")
+  // Resultados do cálculo
+  currentTotalCost      Float    @default(0)
+  cmeTotalCost          Float    @default(0)
+  estimatedSaving       Float    @default(0)
+  savingPercentage      Float    @default(0)
+  opportunityClass      String   @default("baixa") // baixa, media, alta, estrategica
+  status                String   @default("novo") // novo, em_analise, devolutiva_agendada, proposta_enviada, negociacao, ganho, perdido, sem_aderencia
+  internalNotes         String?
+  // Dados de consumo (JSON)
+  consumptionData       String   @default("{}")
+  // Dados de valores atuais (JSON)
+  currentValuesData     String   @default("{}")
+  // Resultado por item (JSON)
+  itemResultsData       String   @default("{}")
+  // Oferta sugerida
+  suggestedOffer        String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  // Relacionamentos
+  contactHistories      ContactHistory[]
+}
+
+model ContactHistory {
+  id          String   @id @default(cuid())
+  leadId      String
+  contactDate DateTime @default(now())
+  summary     String
+  objections  String?
+  nextStep    String?
+  followUpDate DateTime?
+  responsible String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model ReferenceItem {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   // limpeza_automatizada, esterilizacao_vapor, peroxido_hidrogenio
+  refPrice    Float    @default(0)
+  minPrice    Float    @default(0)
+  margin      Float    @default(0)
+  partner     String?
+  internalNotes String?
+  status      String   @default("ativo") // ativo, inativo
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model OfferRule {
+  id          String   @id @default(cuid())
+  minRange    Float    @default(0)
+  maxRange    Float    @default(0)
+  benefit     String
+  internalNote String?
+  showToUser  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
