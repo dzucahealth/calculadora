@@ -136,7 +136,7 @@ export function LandingPage() {
               {[
                 { step: '1', title: 'Dados de Contato', desc: 'Informe seus dados e os dados da instituição.' },
                 { step: '2', title: 'Dados de Consumo', desc: 'Informe a quantidade mensal de cada monitor de esterilização utilizado.' },
-                { step: '3', title: 'Valores Atuais', desc: 'Informe o valor unitário que você paga atualmente.' },
+                { step: '3', title: 'Gasto Mensal', desc: 'Informe o valor total mensal que sua instituição gasta com monitores de esterilização.' },
                 { step: '4', title: 'Resultado', desc: 'Visualize a economia potencial e solicite uma devolutiva técnica.' },
               ].map((item, i) => (
                 <motion.div
