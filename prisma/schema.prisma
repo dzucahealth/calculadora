@@ -82,7 +82,7 @@ model ContactHistory {
 model ReferenceItem {
   id          String   @id @default(cuid())
   name        String
-  category    String   // limpeza_automatizada, esterilizacao_vapor, peroxido_hidrogenio
+  category    String   // indicadores_biologicos_vapor, indicadores_biologicos_plasma, integradores_emuladores, testes_bowie_dick, testes_desafio_liberador
   refPrice    Float    @default(0)
   minPrice    Float    @default(0)
   margin      Float    @default(0)

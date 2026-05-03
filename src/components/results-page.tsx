@@ -9,10 +9,10 @@ import { TrendingDown, TrendingUp, DollarSign, BarChart3, RotateCcw, FileDown, P
 import Image from 'next/image';
 
 const CLASS_LABELS: Record<string, { label: string; color: string; description: string }> = {
-  baixa: { label: 'Baixa Oportunidade', color: 'bg-gray-100 text-gray-700', description: 'Identificamos oportunidades limitadas com base nos dados informados. Mesmo assim, a padronização de processos e a inclusão de soluções de rastreabilidade podem trazer ganhos indiretos significativos para a sua instituição. A equipe CME INTELIGENTE pode avaliar seu cenário completo e identificar pontos de melhoria que vão além dos consumíveis.' },
-  media: { label: 'Média Oportunidade', color: 'bg-yellow-100 text-yellow-700', description: 'Identificamos oportunidades moderadas de otimização nos seus custos com consumíveis de monitoramento da CME. Além da economia direta, podemos apresentar soluções complementares como rastreabilidade, padronização de processos e gestão inteligente de estoque que potencializam ainda mais os resultados.' },
-  alta: { label: 'Alta Oportunidade', color: 'bg-green-100 text-green-700', description: 'Excelente! Identificamos uma oportunidade significativa de economia nos consumíveis da sua CME. Nossa equipe técnica pode realizar uma avaliação detalhada do seu cenário e apresentar uma proposta personalizada que inclui economia direta, padronização e soluções complementares como rastreabilidade e equipamentos de apoio.' },
-  estrategica: { label: 'Oportunidade Estratégica', color: 'bg-emerald-100 text-emerald-700', description: 'Potencial excepcional de economia identificado! Com base no volume de processamento e nos valores informados, sua instituição se enquadra em um cenário de parceria estratégica. Recomendamos uma reunião imediata com nossa equipe para estruturar uma proposta completa que inclua economia em consumíveis, sistema de rastreabilidade, equipamentos de apoio e condições comerciais exclusivas.' },
+  baixa: { label: 'Baixa Oportunidade', color: 'bg-gray-100 text-gray-700', description: 'Identificamos oportunidades limitadas com base nos dados informados. Mesmo assim, a padronização de processos e a inclusão de soluções de rastreabilidade podem trazer ganhos indiretos significativos para a sua instituição. A equipe CME INTELIGENTE pode avaliar seu cenário completo e identificar pontos de melhoria que vão além dos monitores de esterilização.' },
+  media: { label: 'Média Oportunidade', color: 'bg-yellow-100 text-yellow-700', description: 'Identificamos oportunidades moderadas de otimização nos seus custos com monitores de esterilização da CME. Além da economia direta, podemos apresentar soluções complementares como rastreabilidade, padronização de processos e gestão inteligente de estoque que potencializam ainda mais os resultados.' },
+  alta: { label: 'Alta Oportunidade', color: 'bg-green-100 text-green-700', description: 'Excelente! Identificamos uma oportunidade significativa de economia nos monitores de esterilização da sua CME. Nossa equipe técnica pode realizar uma avaliação detalhada do seu cenário e apresentar uma proposta personalizada que inclui economia direta, padronização e soluções complementares como rastreabilidade e equipamentos de apoio.' },
+  estrategica: { label: 'Oportunidade Estratégica', color: 'bg-emerald-100 text-emerald-700', description: 'Potencial excepcional de economia identificado! Com base no volume de processamento e nos valores informados, sua instituição se enquadra em um cenário de parceria estratégica. Recomendamos uma reunião imediata com nossa equipe para estruturar uma proposta completa que inclua economia em monitores de esterilização, sistema de rastreabilidade, equipamentos de apoio e condições comerciais exclusivas.' },
 };
 
 export function ResultsPage() {
@@ -70,7 +70,7 @@ export function ResultsPage() {
       <body>
         <div class="header">
           <h1>CME INTELIGENTE</h1>
-          <p>Calculadora Inteligente de Consumíveis da CME</p>
+          <p>Calculadora Inteligente de Monitores de Esterilização</p>
           <p style="margin-top: 10px;">Relatório de Simulação — ${new Date().toLocaleDateString('pt-BR')}</p>
         </div>
         ${contact ? `<div class="contact-info"><h2>Dados do Contato</h2><div class="contact-grid">
@@ -102,7 +102,7 @@ export function ResultsPage() {
         </table>
         ${result.suggestedOffer ? `<div class="card" style="background: #f0fdfa; border: 1px solid #0d9488; margin-top: 20px;"><div class="card-label" style="color: #0d9488; font-weight: bold;">Oferta Sugerida</div><p style="margin-top: 8px; font-size: 14px;">${result.suggestedOffer}</p></div>` : ''}
         <div class="disclaimer">
-          <strong>Importante:</strong> Esta simulação apresenta uma estimativa preliminar de consumo e oportunidade de otimização em testes e indicadores para CME. A análise definitiva depende da validação técnica da rotina, protocolos internos, equipamentos utilizados, perfil de carga e condições comerciais aplicáveis. A equipe CME INTELIGENTE poderá realizar uma devolutiva técnica para discutir oportunidades de economia, padronização, rastreabilidade e melhoria de controle de processo.
+          <strong>Importante:</strong> Esta simulação apresenta uma estimativa preliminar de consumo e oportunidade de otimização em monitores de esterilização para CME. A análise definitiva depende da validação técnica da rotina, protocolos internos, equipamentos utilizados, perfil de carga e condições comerciais aplicáveis. A equipe CME INTELIGENTE poderá realizar uma devolutiva técnica para discutir oportunidades de economia, padronização, rastreabilidade e melhoria de controle de processo.
         </div>
         <div class="footer">
           <p>CME INTELIGENTE — Gestão Inteligente de Esterilização</p>
@@ -203,7 +203,7 @@ export function ResultsPage() {
             <Card className="bg-amber-50 border-amber-200">
               <CardContent className="p-6">
                 <p className="text-sm text-amber-800 leading-relaxed">
-                  A simulação não identificou economia direta relevante apenas na comparação de consumíveis com base nos valores informados. Ainda assim, pode haver oportunidade de ganho por padronização, rastreabilidade, redução de perdas, melhor gestão de estoque, controle de validade e aumento da segurança do processo. Entre em contato para uma avaliação personalizada da equipe CME INTELIGENTE.
+                  A simulação não identificou economia direta relevante apenas na comparação de monitores de esterilização com base nos valores informados. Ainda assim, pode haver oportunidade de ganho por padronização, rastreabilidade, redução de perdas, melhor gestão de estoque, controle de validade e aumento da segurança do processo. Entre em contato para uma avaliação personalizada da equipe CME INTELIGENTE.
                 </p>
               </CardContent>
             </Card>
@@ -244,7 +244,7 @@ export function ResultsPage() {
           <Card className="bg-muted/50">
             <CardContent className="p-4">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                <strong>Importante:</strong> Esta simulação apresenta uma estimativa preliminar de consumo e oportunidade de otimização em testes e indicadores para CME. A análise definitiva depende da validação técnica da rotina, protocolos internos, equipamentos utilizados, perfil de carga e condições comerciais aplicáveis. A equipe CME INTELIGENTE poderá realizar uma devolutiva técnica para discutir oportunidades de economia, padronização, rastreabilidade e melhoria de controle de processo.
+                <strong>Importante:</strong> Esta simulação apresenta uma estimativa preliminar de consumo e oportunidade de otimização em monitores de esterilização para CME. A análise definitiva depende da validação técnica da rotina, protocolos internos, equipamentos utilizados, perfil de carga e condições comerciais aplicáveis. A equipe CME INTELIGENTE poderá realizar uma devolutiva técnica para discutir oportunidades de economia, padronização, rastreabilidade e melhoria de controle de processo.
               </p>
             </CardContent>
           </Card>

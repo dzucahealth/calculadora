@@ -18,21 +18,27 @@ import Image from 'next/image';
 const STEPS = ['Dados de Contato', 'Consumo Mensal', 'Gasto Atual', 'Confirmação'];
 
 const CATEGORY_LABELS: Record<string, string> = {
-  limpeza_automatizada: 'Limpeza automatizada',
-  esterilizacao_vapor: 'Esterilização a vapor',
-  peroxido_hidrogenio: 'Peróxido de hidrogênio',
+  indicadores_biologicos_vapor: 'Indicadores Biológicos - Linha Vapor',
+  indicadores_biologicos_plasma: 'Indicadores Biológicos - Linha Plasma VH202',
+  integradores_emuladores: 'Integradores e Emuladores Químicos',
+  testes_bowie_dick: 'Testes Bowie & Dick',
+  testes_desafio_liberador: 'Testes Desafio e Liberador de Carga',
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
-  limpeza_automatizada: '🧹',
-  esterilizacao_vapor: '💨',
-  peroxido_hidrogenio: '🧪',
+  indicadores_biologicos_vapor: '🔬',
+  indicadores_biologicos_plasma: '⚗️',
+  integradores_emuladores: '📊',
+  testes_bowie_dick: '📦',
+  testes_desafio_liberador: '🎯',
 };
 
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
-  limpeza_automatizada: 'Testes de cavitação, conectores/lúmen, limpeza de ultrassônica e termodesinfectadora',
-  esterilizacao_vapor: 'Bowie&Dick, integradores, indicadores químicos e biológicos para vapor',
-  peroxido_hidrogenio: 'PCD químico, indicadores químicos e biológicos para peróxido de hidrogênio',
+  indicadores_biologicos_vapor: 'Indicadores biológicos fluorimétricos para esterilização a vapor (leitura rápida: 20min, 1h ou 3h)',
+  indicadores_biologicos_plasma: 'Indicadores biológicos fluorimétricos para esterilização por plasma (VH202)',
+  integradores_emuladores: 'Integradores e emuladores químicos tipo 5 para monitoramento de ciclo',
+  testes_bowie_dick: 'Testes Bowie & Dick em pacote pronto (4kg e 7kg) para verificação de vapor',
+  testes_desafio_liberador: 'PCD - Teste desafio e liberador de carga tipo 5 para validação de esterilizadores',
 };
 
 const INSTITUTION_TYPES = [
@@ -114,7 +120,7 @@ export function CalculatorForm() {
     }
     if (step === 2) {
       const spending = parseFloat(globalMonthlySpending);
-      if (!globalMonthlySpending || isNaN(spending) || spending <= 0) { toast.error('Informe o valor total mensal gasto com consumíveis'); return false; }
+      if (!globalMonthlySpending || isNaN(spending) || spending <= 0) { toast.error('Informe o valor total mensal gasto com monitores de esterilização'); return false; }
     }
     if (step === 3) {
       if (!lgpdConsent) { toast.error('É necessário aceitar o termo LGPD'); return false; }
@@ -202,7 +208,7 @@ export function CalculatorForm() {
             <Image src="/logo-cme.png" alt="CME INTELIGENTE" width={40} height={40} className="h-10 w-auto" />
             <div>
               <h1 className="text-sm font-bold text-primary">CME INTELIGENTE</h1>
-              <p className="text-xs text-muted-foreground">Calculadora de Consumíveis</p>
+              <p className="text-xs text-muted-foreground">Monitores de Esterilização</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={() => setView('landing')} className="text-muted-foreground">
@@ -301,7 +307,7 @@ export function CalculatorForm() {
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Quais consumíveis você utiliza?</CardTitle>
+                <CardTitle>Quais monitores de esterilização você utiliza?</CardTitle>
                 <CardDescription>Informe a quantidade mensal aproximada de cada item que sua CME consome. Deixe em 0 os itens que não utiliza.</CardDescription>
               </CardHeader>
             </Card>
@@ -358,7 +364,7 @@ export function CalculatorForm() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-3">
-                  <Label className="text-base font-medium">Gasto mensal total com consumíveis da CME *</Label>
+                  <Label className="text-base font-medium">Gasto mensal total com monitores de esterilização *</Label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-semibold text-muted-foreground">R$</span>
                     <Input
@@ -372,7 +378,7 @@ export function CalculatorForm() {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Considere todos os consumíveis: Bowie&Dick, indicadores químicos, biológicos, testes de cavitação, conectores, etc.
+                    Considere todos os monitores: Bowie&Dick, indicadores químicos, biológicos, integradores, emuladores, PCD, etc.
                   </p>
                 </div>
 

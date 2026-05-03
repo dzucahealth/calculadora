@@ -28,7 +28,7 @@ export function PrivacyPolicy() {
             <h2 className="text-lg font-semibold mt-6">1. Informações Gerais</h2>
             <p>
               A CME INTELIGENTE (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo; ou &ldquo;empresa&rdquo;) está comprometida com a proteção da privacidade
-              e dos dados pessoais dos usuários de nossa plataforma &ldquo;Calculadora Inteligente de Consumíveis da CME&rdquo;.
+              e dos dados pessoais dos usuários de nossa plataforma &ldquo;Calculadora Inteligente de Monitores de Esterilização&rdquo;.
               Esta Política de Privacidade descreve como coletamos, utilizamos, armazenamos e protegemos suas informações
               pessoais, em conformidade com a Lei Geral de Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018).
             </p>
@@ -39,9 +39,9 @@ export function PrivacyPolicy() {
               <li><strong>Dados de identificação:</strong> nome completo, e-mail, telefone (WhatsApp)</li>
               <li><strong>Dados profissionais:</strong> cargo/função, instituição de trabalho</li>
               <li><strong>Dados geográficos:</strong> cidade e estado</li>
-              <li><strong>Dados operacionais:</strong> tipo de instituição, quantidade de salas cirúrgicas, estrutura da CME</li>
-              <li><strong>Dados de consumo:</strong> informações sobre consumo de produtos para saúde (consumíveis de esterilização)</li>
-              <li><strong>Dados comerciais:</strong> valores pagos por consumíveis, fornecedores atuais</li>
+              <li><strong>Dados operacionais:</strong> tipo de instituição, quantidade de pacotes esterilizados, incubadoras, estrutura da CME</li>
+              <li><strong>Dados de consumo:</strong> informações sobre consumo de monitores de esterilização (indicadores biológicos, integradores, Bowie & Dick, PCD)</li>
+              <li><strong>Dados comerciais:</strong> valores pagos por monitores de esterilização</li>
             </ul>
 
             <h2 className="text-lg font-semibold mt-6">3. Finalidades do Tratamento</h2>

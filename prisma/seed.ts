@@ -20,40 +20,41 @@ async function main() {
   });
   console.log(`✅ Admin criado: ${admin.email}`);
 
-  // Reference items
+  // Reference items - Monitores de Esterilização
   const referenceItems = [
-    // Limpeza automatizada
-    { name: 'Teste de cavitação', category: 'limpeza_automatizada', refPrice: 45.00 },
-    { name: 'Teste de conectores/lúmen', category: 'limpeza_automatizada', refPrice: 38.00 },
-    { name: 'Teste de limpeza da ultrassônica', category: 'limpeza_automatizada', refPrice: 42.00 },
-    { name: 'Teste de limpeza da termodesinfectadora', category: 'limpeza_automatizada', refPrice: 35.00 },
-    { name: 'Teste de termodesinfecção', category: 'limpeza_automatizada', refPrice: 40.00 },
-    // Esterilização a vapor
-    { name: 'Bowie&Dick', category: 'esterilizacao_vapor', refPrice: 28.00 },
-    { name: 'Pacote teste desafio com integrador classe 5 ou 6', category: 'esterilizacao_vapor', refPrice: 55.00 },
-    { name: 'Indicador químico interno classe 5 ou 6', category: 'esterilizacao_vapor', refPrice: 12.00 },
-    { name: 'Indicador biológico de rotina', category: 'esterilizacao_vapor', refPrice: 35.00 },
-    { name: 'Indicador biológico para carga com implante', category: 'esterilizacao_vapor', refPrice: 65.00 },
-    // Peróxido de hidrogênio
-    { name: 'PCD químico para peróxido', category: 'peroxido_hidrogenio', refPrice: 48.00 },
-    { name: 'Indicador químico interno para peróxido', category: 'peroxido_hidrogenio', refPrice: 15.00 },
-    { name: 'Indicador biológico para peróxido', category: 'peroxido_hidrogenio', refPrice: 85.00 },
-    { name: 'BI para carga crítica de peróxido', category: 'peroxido_hidrogenio', refPrice: 95.00 },
+    // Indicadores Biológicos - Linha Vapor
+    { name: 'IB Vapor Fluorescência 3hrs - 50 un', category: 'indicadores_biologicos_vapor', refPrice: 12.00, partner: 'Fluorimétrico' },
+    { name: 'IB Vapor Fluorescência 1hr - 50 un', category: 'indicadores_biologicos_vapor', refPrice: 13.50, partner: 'Fluorimétrico' },
+    { name: 'IB Vapor Fluorescência 20min - 50 un', category: 'indicadores_biologicos_vapor', refPrice: 16.00, partner: 'Fluorimétrico' },
+    // Indicadores Biológicos - Linha Plasma VH202
+    { name: 'IB Fluorimétrico Plasma VH202 20m - 50 un', category: 'indicadores_biologicos_plasma', refPrice: 17.00, partner: 'Fluorimétrico' },
+    // Integradores e Emuladores Químicos
+    { name: 'Integrador Químico Vapor Tipo 5 - 250 un', category: 'integradores_emuladores', refPrice: 0.24, partner: 'Integrador' },
+    // Testes Bowie & Dick
+    { name: 'Teste Bowie & Dick 4kg - Pacote Pronto', category: 'testes_bowie_dick', refPrice: 13.00, partner: 'Pacote Pronto' },
+    { name: 'Teste Bowie & Dick 7kg - Pacote Pronto', category: 'testes_bowie_dick', refPrice: 13.50, partner: 'Pacote Pronto' },
+    // Testes Desafio e Liberador de Carga
+    { name: 'PCD - Teste Desafio 3hr', category: 'testes_desafio_liberador', refPrice: 25.00, partner: 'Teste Desafio' },
+    { name: 'PCD - Teste Desafio 1hr', category: 'testes_desafio_liberador', refPrice: 28.00, partner: 'Teste Desafio' },
+    { name: 'PCD - Teste Desafio 20min', category: 'testes_desafio_liberador', refPrice: 34.00, partner: 'Teste Desafio' },
+    { name: 'PCD - Liberador de Carga Tipo 5', category: 'testes_desafio_liberador', refPrice: 13.00, partner: 'Liberador de Carga' },
   ];
 
   for (const item of referenceItems) {
     const minPrice = parseFloat((item.refPrice * 0.8).toFixed(2));
     const margin = 20;
+    const id = `${item.category}_${item.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}`;
     await prisma.referenceItem.upsert({
-      where: { id: `${item.category}_${item.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}` },
-      update: { refPrice: item.refPrice, minPrice, margin },
+      where: { id },
+      update: { refPrice: item.refPrice, minPrice, margin, partner: item.partner },
       create: {
-        id: `${item.category}_${item.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}`,
+        id,
         name: item.name,
         category: item.category,
         refPrice: item.refPrice,
         minPrice,
         margin,
+        partner: item.partner,
         status: 'ativo',
       },
     });
@@ -63,23 +64,26 @@ async function main() {
   // Offer rules
   const offerRules = [
     {
+      id: 'rule_monitores_0_3000',
       minRange: 0,
-      maxRange: 5000,
-      benefit: 'Rastreabilidade em condição especial, plano básico',
+      maxRange: 3000,
+      benefit: 'Kit de amostras gratuitas de monitores de esterilização + condições especiais no primeiro pedido',
       showToUser: true,
-      internalNote: 'Atendimento padrão com rastreabilidade básica',
+      internalNote: 'Atendimento padrão com amostras grátis',
     },
     {
-      minRange: 5001,
-      maxRange: 10000,
-      benefit: 'Rastreabilidade + 1 incubadora, plano intermediário',
+      id: 'rule_monitores_3001_8000',
+      minRange: 3001,
+      maxRange: 8000,
+      benefit: 'Rastreabilidade em condição especial + desconto progressivo + 1 incubadora em comodato',
       showToUser: true,
       internalNote: 'Oferta intermediária com incubadora inclusa',
     },
     {
-      minRange: 10001,
+      id: 'rule_monitores_8001_0',
+      minRange: 8001,
       maxRange: 0,
-      benefit: 'Rastreabilidade + 2 incubadoras, plano avançado, prioridade reunião',
+      benefit: 'Plano exclusivo: rastreabilidade + 2 incubadoras + prioridade reunião + desconto máximo',
       showToUser: true,
       internalNote: 'Oferta premium com 2 incubadoras e prioridade na agenda',
     },
@@ -87,7 +91,7 @@ async function main() {
 
   for (const rule of offerRules) {
     await prisma.offerRule.upsert({
-      where: { id: `rule_${rule.minRange}_${rule.maxRange}` },
+      where: { id: rule.id },
       update: {},
       create: rule,
     });

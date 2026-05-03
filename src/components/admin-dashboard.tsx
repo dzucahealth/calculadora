@@ -212,7 +212,7 @@ export function AdminDashboard() {
         {/* Ranking de itens com maior diferença de preço */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2"><DollarSign className="w-4 h-4" /> Referência Comercial - Preços</CardTitle>
+            <CardTitle className="text-sm flex items-center gap-2"><DollarSign className="w-4 h-4" /> Referência de Monitores - Preços</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64 max-h-64 overflow-y-auto">

@@ -13,9 +13,11 @@ export async function GET() {
     const grouped: Record<string, string[]> = {};
     for (const item of items) {
       const categoryLabel: Record<string, string> = {
-        limpeza_automatizada: 'Limpeza automatizada',
-        esterilizacao_vapor: 'Esterilização a vapor',
-        peroxido_hidrogenio: 'Peróxido de hidrogênio',
+        indicadores_biologicos_vapor: 'Indicadores Biológicos - Linha Vapor',
+        indicadores_biologicos_plasma: 'Indicadores Biológicos - Linha Plasma VH202',
+        integradores_emuladores: 'Integradores e Emuladores Químicos',
+        testes_bowie_dick: 'Testes Bowie & Dick',
+        testes_desafio_liberador: 'Testes Desafio e Liberador de Carga',
       };
       const label = categoryLabel[item.category] || item.category;
       if (!grouped[label]) grouped[label] = [];

@@ -73,7 +73,7 @@ export function LandingPage() {
                 </div>
                 <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
                   Calculadora Inteligente de{' '}
-                  <span className="text-primary">Consumíveis da CME</span>
+                  <span className="text-primary">Monitores de Esterilização</span>
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                   Compare custos, estime consumo e descubra oportunidades de economia com governança técnica.
@@ -102,7 +102,7 @@ export function LandingPage() {
             >
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Como funciona?</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">
-                Em 4 passos simples, você terá uma análise completa do seu consumo de consumíveis.
+                Em 4 passos simples, você terá uma análise completa do seu consumo de monitores de esterilização.
               </p>
             </motion.div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -135,7 +135,7 @@ export function LandingPage() {
             <div className="max-w-3xl mx-auto space-y-8">
               {[
                 { step: '1', title: 'Dados de Contato', desc: 'Informe seus dados e os dados da instituição.' },
-                { step: '2', title: 'Dados de Consumo', desc: 'Informe a quantidade mensal de cada consumível utilizado.' },
+                { step: '2', title: 'Dados de Consumo', desc: 'Informe a quantidade mensal de cada monitor de esterilização utilizado.' },
                 { step: '3', title: 'Valores Atuais', desc: 'Informe o valor unitário que você paga atualmente.' },
                 { step: '4', title: 'Resultado', desc: 'Visualize a economia potencial e solicite uma devolutiva técnica.' },
               ].map((item, i) => (

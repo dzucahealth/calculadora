@@ -27,18 +27,22 @@ interface ReferenceItem {
 }
 
 const CATEGORY_OPTIONS = [
-  { value: 'limpeza_automatizada', label: 'Limpeza automatizada' },
-  { value: 'esterilizacao_vapor', label: 'Esterilização a vapor' },
-  { value: 'peroxido_hidrogenio', label: 'Peróxido de hidrogênio' },
+  { value: 'indicadores_biologicos_vapor', label: 'Indicadores Biológicos - Linha Vapor' },
+  { value: 'indicadores_biologicos_plasma', label: 'Indicadores Biológicos - Linha Plasma VH202' },
+  { value: 'integradores_emuladores', label: 'Integradores e Emuladores Químicos' },
+  { value: 'testes_bowie_dick', label: 'Testes Bowie & Dick' },
+  { value: 'testes_desafio_liberador', label: 'Testes Desafio e Liberador de Carga' },
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {
-  limpeza_automatizada: 'Limpeza automatizada',
-  esterilizacao_vapor: 'Esterilização a vapor',
-  peroxido_hidrogenio: 'Peróxido de hidrogênio',
+  indicadores_biologicos_vapor: 'Indicadores Biológicos - Linha Vapor',
+  indicadores_biologicos_plasma: 'Indicadores Biológicos - Linha Plasma VH202',
+  integradores_emuladores: 'Integradores e Emuladores Químicos',
+  testes_bowie_dick: 'Testes Bowie & Dick',
+  testes_desafio_liberador: 'Testes Desafio e Liberador de Carga',
 };
 
-const emptyForm = { name: '', category: 'limpeza_automatizada', refPrice: '0', minPrice: '0', margin: '20', partner: '', internalNotes: '', status: 'ativo' };
+const emptyForm = { name: '', category: 'indicadores_biologicos_vapor', refPrice: '0', minPrice: '0', margin: '20', partner: '', internalNotes: '', status: 'ativo' };
 
 export function AdminReference() {
   const { adminToken } = useAppStore();
