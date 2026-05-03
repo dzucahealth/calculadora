@@ -23,16 +23,16 @@ async function main() {
   // Reference items - Monitores de Esterilização
   const referenceItems = [
     // Indicadores Biológicos - Linha Vapor
-    { name: 'IB Vapor Fluorescência 3hrs - 50 un', category: 'indicadores_biologicos_vapor', refPrice: 12.00, partner: 'Fluorimétrico' },
-    { name: 'IB Vapor Fluorescência 1hr - 50 un', category: 'indicadores_biologicos_vapor', refPrice: 13.50, partner: 'Fluorimétrico' },
-    { name: 'IB Vapor Fluorescência 20min - 50 un', category: 'indicadores_biologicos_vapor', refPrice: 16.00, partner: 'Fluorimétrico' },
+    { name: 'IB Vapor Fluorescência 3hrs', category: 'indicadores_biologicos_vapor', refPrice: 12.00, partner: 'Fluorimétrico' },
+    { name: 'IB Vapor Fluorescência 1hr', category: 'indicadores_biologicos_vapor', refPrice: 13.50, partner: 'Fluorimétrico' },
+    { name: 'IB Vapor Fluorescência 20min', category: 'indicadores_biologicos_vapor', refPrice: 16.00, partner: 'Fluorimétrico' },
     // Indicadores Biológicos - Linha Plasma VH202
-    { name: 'IB Fluorimétrico Plasma VH202 20m - 50 un', category: 'indicadores_biologicos_plasma', refPrice: 17.00, partner: 'Fluorimétrico' },
+    { name: 'IB Fluorimétrico Plasma VH202 20m', category: 'indicadores_biologicos_plasma', refPrice: 17.00, partner: 'Fluorimétrico' },
     // Integradores e Emuladores Químicos
-    { name: 'Integrador Químico Vapor Tipo 5 - 250 un', category: 'integradores_emuladores', refPrice: 0.24, partner: 'Integrador' },
+    { name: 'Integrador Químico Vapor Tipo 5', category: 'integradores_emuladores', refPrice: 0.24, partner: 'Integrador' },
     // Testes Bowie & Dick
-    { name: 'Teste Bowie & Dick 4kg - Pacote Pronto', category: 'testes_bowie_dick', refPrice: 13.00, partner: 'Pacote Pronto' },
-    { name: 'Teste Bowie & Dick 7kg - Pacote Pronto', category: 'testes_bowie_dick', refPrice: 13.50, partner: 'Pacote Pronto' },
+    { name: 'Teste Bowie & Dick 4kg', category: 'testes_bowie_dick', refPrice: 13.00, partner: 'Pacote Pronto' },
+    { name: 'Teste Bowie & Dick 7kg', category: 'testes_bowie_dick', refPrice: 13.50, partner: 'Pacote Pronto' },
     // Testes Desafio e Liberador de Carga
     { name: 'PCD - Teste Desafio 3hr', category: 'testes_desafio_liberador', refPrice: 25.00, partner: 'Teste Desafio' },
     { name: 'PCD - Teste Desafio 1hr', category: 'testes_desafio_liberador', refPrice: 28.00, partner: 'Teste Desafio' },
