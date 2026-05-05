@@ -1,2 +1,5 @@
 [phases.setup]
 aptPkgs = ["openssl", "libssl-dev", "libssl3"]
+
+[variables]
+NODE_VERSION = "22.15.0"
