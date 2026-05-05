@@ -1,5 +1,6 @@
 [phases.setup]
 aptPkgs = ["openssl", "libssl-dev", "libssl3"]
+nixPkgs = ["bun"]
 
 [phases.install]
 cmds = ["yarn install --frozen-lockfile --ignore-engines"]
