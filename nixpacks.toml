@@ -1,6 +1,2 @@
 [phases.setup]
 aptPkgs = ["openssl", "libssl-dev", "libssl3"]
-nixPkgs = ["bun", "yarn"]
-
-[start]
-cmd = "LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH yarn start"
