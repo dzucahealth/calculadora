@@ -30,24 +30,52 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (não commitar .env com credenciais reais)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
 .vercel
 
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-local-*
-.claude
-.z-ai-config
+
+# banco de dados SQLite local
+db/
+*.db
+*.sqlite
+
+# uploads de arquivos
+upload/
+
+# logs
 *.log
 dev.log
 dev.out.log
+server.pid
+server.log
+
+# arquivos locais/pessoais
+local-*
+.claude
+.z-ai-config
+worklog.md
+
+# bun
+bun.lockb
+
+# skills (conteúdo interno)
+skills/
+
+# scripts internos
+.zscripts/
 test
 prompt
+
 
 server.log
 # Skills directory
