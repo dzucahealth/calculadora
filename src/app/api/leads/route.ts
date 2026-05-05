@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
         whatsapp: contactData.whatsapp,
         role: contactData.role || '',
         institution: contactData.institution || '',
+        cnpj: contactData.cnpj || null,
         city: contactData.city || '',
         state: contactData.state || '',
         institutionType: contactData.institutionType || 'outro',

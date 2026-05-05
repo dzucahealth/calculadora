@@ -23,13 +23,13 @@ export function LandingPage() {
     },
     {
       icon: Shield,
-      title: 'Governança Técnica',
-      description: 'Análise baseada em normas vigentes e melhores práticas de processamento de produtos para saúde.',
+      title: 'Análise de Gastos',
+      description: 'Governança de dados de custo com comparativo detalhado entre seus gastos atuais e preços de referência de mercado.',
     },
     {
       icon: BarChart3,
-      title: 'Relatórios Profissionais',
-      description: 'Gere relatórios completos para apresentar à diretoria e justificar mudanças de fornecedor.',
+      title: 'Relatório de Economia e Soluções',
+      description: 'Gere relatórios completos de economia e soluções para apresentar à diretoria e justificar mudanças estratégicas.',
     },
   ];
 
@@ -76,7 +76,7 @@ export function LandingPage() {
                   <span className="text-primary">Monitores de Esterilização</span>
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Compare custos, estime consumo e descubra oportunidades de economia com governança técnica.
+                  Compare custos, descubra pacotes com melhores preços e explore novas soluções e tecnologias atreladas ao seu consumo.
                 </p>
                 <Button
                   size="lg"
@@ -137,7 +137,7 @@ export function LandingPage() {
                 { step: '1', title: 'Dados de Contato', desc: 'Informe seus dados e os dados da instituição.' },
                 { step: '2', title: 'Dados de Consumo', desc: 'Informe a quantidade mensal de cada monitor de esterilização utilizado.' },
                 { step: '3', title: 'Gasto Mensal', desc: 'Informe o valor total mensal que sua instituição gasta com monitores de esterilização.' },
-                { step: '4', title: 'Resultado', desc: 'Visualize a economia potencial e solicite uma devolutiva técnica.' },
+                { step: '4', title: 'Resultado', desc: 'Visualize a economia potencial, pacotes disponíveis e soluções complementares.' },
               ].map((item, i) => (
                 <motion.div
                   key={item.step}

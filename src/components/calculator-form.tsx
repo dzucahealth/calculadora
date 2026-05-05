@@ -62,7 +62,7 @@ export function CalculatorForm() {
   const [referenceItems, setReferenceItems] = useState<Array<{ name: string; category: string }>>([]);
 
   const [contactData, setContactData] = useState({
-    fullName: '', email: '', whatsapp: '', role: '', institution: '', city: '', state: '',
+    fullName: '', email: '', whatsapp: '', role: '', institution: '', cnpj: '', city: '', state: '',
     institutionType: '', sterilizedPackages: '', incubatorCount: '', incubatorType: '',
     hasOwnCME: '', hasTraceability: '', wantsFeedback: 'sim',
   });
@@ -96,6 +96,17 @@ export function CalculatorForm() {
   }, []);
 
   const updateContact = (field: string, value: string) => {
+    if (field === 'cnpj') {
+      const digits = value.replace(/\D/g, '').slice(0, 14);
+      let masked = '';
+      if (digits.length > 0) masked += digits.slice(0, 2);
+      if (digits.length > 2) masked += '.' + digits.slice(2, 5);
+      if (digits.length > 5) masked += '.' + digits.slice(5, 8);
+      if (digits.length > 8) masked += '/' + digits.slice(8, 12);
+      if (digits.length > 12) masked += '-' + digits.slice(12, 14);
+      setContactData((prev) => ({ ...prev, [field]: masked }));
+      return;
+    }
     setContactData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -169,7 +180,7 @@ export function CalculatorForm() {
       const fullData: CalculatorData = {
         contactData: {
           fullName: contactData.fullName, email: contactData.email, whatsapp: contactData.whatsapp,
-          role: contactData.role, institution: contactData.institution, city: contactData.city,
+          role: contactData.role, institution: contactData.institution, cnpj: contactData.cnpj, city: contactData.city,
           state: contactData.state, institutionType: contactData.institutionType,
           sterilizedPackages: contactData.sterilizedPackages ? parseInt(contactData.sterilizedPackages) : null,
           incubatorCount: contactData.incubatorCount ? parseInt(contactData.incubatorCount) : null,
@@ -247,6 +258,7 @@ export function CalculatorForm() {
                   <div className="space-y-2"><Label>WhatsApp *</Label><Input placeholder="(00) 00000-0000" value={contactData.whatsapp} onChange={(e) => updateContact('whatsapp', e.target.value)} /></div>
                   <div className="space-y-2"><Label>Cargo/Função</Label><Input placeholder="Ex: Enfermeiro(a) do CME" value={contactData.role} onChange={(e) => updateContact('role', e.target.value)} /></div>
                   <div className="space-y-2"><Label>Instituição *</Label><Input placeholder="Nome da instituição" value={contactData.institution} onChange={(e) => updateContact('institution', e.target.value)} /></div>
+                  <div className="space-y-2"><Label>CNPJ</Label><Input placeholder="00.000.000/0000-00" value={contactData.cnpj} onChange={(e) => updateContact('cnpj', e.target.value)} maxLength={18} /></div>
                   <div className="space-y-2">
                     <Label>Tipo de instituição *</Label>
                     <Select value={contactData.institutionType} onValueChange={(v) => updateContact('institutionType', v)}>
@@ -427,6 +439,7 @@ export function CalculatorForm() {
                     <div><span className="text-muted-foreground">E-mail:</span> {contactData.email}</div>
                     <div><span className="text-muted-foreground">WhatsApp:</span> {contactData.whatsapp}</div>
                     <div><span className="text-muted-foreground">Instituição:</span> {contactData.institution}</div>
+                    {contactData.cnpj && <div><span className="text-muted-foreground">CNPJ:</span> {contactData.cnpj}</div>}
                     <div><span className="text-muted-foreground">Cidade/Estado:</span> {contactData.city}/{contactData.state}</div>
                     <div><span className="text-muted-foreground">Tipo:</span> {INSTITUTION_TYPES.find((t) => t.value === contactData.institutionType)?.label}</div>
                     <div><span className="text-muted-foreground">CME própria:</span> {contactData.hasOwnCME === 'sim' ? 'Sim' : contactData.hasOwnCME === 'nao' ? 'Não' : '—'}</div>

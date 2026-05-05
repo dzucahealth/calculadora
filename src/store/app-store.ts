@@ -20,6 +20,7 @@ export interface CalculatorData {
     whatsapp: string;
     role: string;
     institution: string;
+    cnpj: string;
     city: string;
     state: string;
     institutionType: string;

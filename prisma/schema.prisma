@@ -25,6 +25,7 @@ model Lead {
   whatsapp           String
   role               String
   institution        String
+  cnpj               String?
   city               String
   state              String
   institutionType    String // hospital, clinica, hospital_dia, processadora, maternidade, odontologia, outro

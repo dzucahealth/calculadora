@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CME INTELIGENTE - Calculadora Inteligente de Monitores de Esterilização",
-  description: "Compare custos, estime consumo e descubra oportunidades de economia com governança técnica para Central de Material Esterilizado.",
-  keywords: ["CME", "esterilização", "monitores de esterilização", "indicadores biológicos", "calculadora", "economia", "governança técnica", "produtos para saúde"],
+  description: "Análise inteligente de gastos com monitores de esterilização. Compare custos, descubra pacotes com melhores preços e explore novas soluções e tecnologias para Central de Material Esterilizado.",
+  keywords: ["CME", "esterilização", "monitores de esterilização", "indicadores biológicos", "calculadora", "economia", "gastos", "pacotes", "soluções", "consumíveis"],
   authors: [{ name: "CME INTELIGENTE" }],
   icons: {
     icon: "/logo-cme.png",
   },
   openGraph: {
     title: "Calculadora Inteligente de Monitores de Esterilização",
-    description: "Compare custos e descubra oportunidades de economia com a CME INTELIGENTE.",
+    description: "Análise de gastos, pacotes personalizados e novas soluções para monitores de esterilização com a CME INTELIGENTE.",
     siteName: "CME INTELIGENTE",
     type: "website",
   },
