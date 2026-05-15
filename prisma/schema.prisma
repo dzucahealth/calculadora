@@ -53,11 +53,11 @@ model Lead {
   status             String           @default("novo") // novo, em_analise, devolutiva_agendada, proposta_enviada, negociacao, ganho, perdido, sem_aderencia
   internalNotes      String?
   // Dados de consumo (JSON)
-  consumptionData    String           @db.LongText @default("{}")
+  consumptionData    String           @db.LongText
   // Dados de valores atuais (JSON)
-  currentValuesData  String           @db.LongText @default("{}")
+  currentValuesData  String           @db.LongText
   // Resultado por item (JSON)
-  itemResultsData    String           @db.LongText @default("{}")
+  itemResultsData    String           @db.LongText
   // Oferta sugerida
   suggestedOffer     String?
   createdAt          DateTime         @default(now())
