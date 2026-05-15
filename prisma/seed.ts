@@ -20,6 +20,25 @@ async function main() {
   });
   console.log(`✅ Admin criado: ${admin.email}`);
 
+  // Categories
+  const categories = [
+    { id: 'indicadores_biologicos_vapor', name: 'Indicadores Biológicos - Linha Vapor', description: 'Indicadores biológicos para esterilização a vapor', order: 1 },
+    { id: 'indicadores_biologicos_plasma', name: 'Indicadores Biológicos - Linha Plasma VH202', description: 'Indicadores biológicos para plasma de peróxido de hidrogênio', order: 2 },
+    { id: 'integradores_emuladores', name: 'Integradores e Emuladores Químicos', description: 'Integradores e emuladores químicos tipo 5', order: 3 },
+    { id: 'testes_bowie_dick', name: 'Testes Bowie & Dick', description: 'Testes de penetração de vapor para autoclaves', order: 4 },
+    { id: 'testes_desafio_liberador', name: 'Testes Desafio e Liberador de Carga', description: 'PCDs e liberadores de carga', order: 5 },
+    { id: 'testes_limpeza_termodesinfeccao', name: 'Testes de Limpeza e Termodesinfecção', description: 'Testes para validação de limpeza e termodesinfecção', order: 6 },
+  ];
+
+  for (const cat of categories) {
+    await prisma.category.upsert({
+      where: { id: cat.id },
+      update: { name: cat.name, description: cat.description, order: cat.order },
+      create: cat,
+    });
+  }
+  console.log(`✅ ${categories.length} categorias criadas`);
+
   // Reference items - Monitores de Esterilização
   const referenceItems = [
     // Indicadores Biológicos - Linha Vapor
@@ -38,6 +57,13 @@ async function main() {
     { name: 'PCD - Teste Desafio 1hr', category: 'testes_desafio_liberador', refPrice: 28.00, partner: 'Teste Desafio' },
     { name: 'PCD - Teste Desafio 20min', category: 'testes_desafio_liberador', refPrice: 34.00, partner: 'Teste Desafio' },
     { name: 'PCD - Liberador de Carga Tipo 5', category: 'testes_desafio_liberador', refPrice: 13.00, partner: 'Liberador de Carga' },
+    // Testes de Limpeza e Termodesinfecção
+    { name: 'Teste de Cavitação', category: 'testes_limpeza_termodesinfeccao', refPrice: 15.00, partner: 'Teste Limpeza' },
+    { name: 'Teste de Limpeza de Lúmen', category: 'testes_limpeza_termodesinfeccao', refPrice: 18.00, partner: 'Teste Limpeza' },
+    { name: 'Teste de Limpeza', category: 'testes_limpeza_termodesinfeccao', refPrice: 12.00, partner: 'Teste Limpeza' },
+    { name: 'Teste para Termodesinfetadora', category: 'testes_limpeza_termodesinfeccao', refPrice: 20.00, partner: 'Teste Limpeza' },
+    { name: 'Indicador de Limpeza', category: 'testes_limpeza_termodesinfeccao', refPrice: 8.00, partner: 'Indicador' },
+    { name: 'Detector de Proteína', category: 'testes_limpeza_termodesinfeccao', refPrice: 25.00, partner: 'Detector' },
   ];
 
   for (const item of referenceItems) {

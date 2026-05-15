@@ -14,6 +14,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+interface Category {
+  id: string;
+  name: string;
+  description: string | null;
+  order: number;
+  status: string;
+}
+
 interface ReferenceItem {
   id: string;
   name: string;
@@ -26,27 +34,12 @@ interface ReferenceItem {
   status: string;
 }
 
-const CATEGORY_OPTIONS = [
-  { value: 'indicadores_biologicos_vapor', label: 'Indicadores Biológicos - Linha Vapor' },
-  { value: 'indicadores_biologicos_plasma', label: 'Indicadores Biológicos - Linha Plasma VH202' },
-  { value: 'integradores_emuladores', label: 'Integradores e Emuladores Químicos' },
-  { value: 'testes_bowie_dick', label: 'Testes Bowie & Dick' },
-  { value: 'testes_desafio_liberador', label: 'Testes Desafio e Liberador de Carga' },
-];
-
-const CATEGORY_LABELS: Record<string, string> = {
-  indicadores_biologicos_vapor: 'Indicadores Biológicos - Linha Vapor',
-  indicadores_biologicos_plasma: 'Indicadores Biológicos - Linha Plasma VH202',
-  integradores_emuladores: 'Integradores e Emuladores Químicos',
-  testes_bowie_dick: 'Testes Bowie & Dick',
-  testes_desafio_liberador: 'Testes Desafio e Liberador de Carga',
-};
-
-const emptyForm = { name: '', category: 'indicadores_biologicos_vapor', refPrice: '0', minPrice: '0', margin: '20', partner: '', internalNotes: '', status: 'ativo' };
+const emptyForm = { name: '', category: '', refPrice: '0', minPrice: '0', margin: '20', partner: '', internalNotes: '', status: 'ativo' };
 
 export function AdminReference() {
   const { adminToken } = useAppStore();
   const [items, setItems] = useState<ReferenceItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -65,12 +58,25 @@ export function AdminReference() {
       setItems(await res.json());
     } catch {
       toast.error('Erro ao carregar itens');
-    } finally {
-      setLoading(false);
     }
   }, [adminToken]);
 
-  useEffect(() => { fetchItems(); }, [fetchItems]);
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await fetch('/api/categories', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      if (!res.ok) throw new Error();
+      const cats = await res.json();
+      setCategories(cats.filter((c: Category) => c.status === 'ativo'));
+    } catch {
+      console.error('Erro ao carregar categorias');
+    }
+  }, [adminToken]);
+
+  useEffect(() => {
+    Promise.all([fetchItems(), fetchCategories()]).finally(() => setLoading(false));
+  }, [fetchItems, fetchCategories]);
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
@@ -194,7 +200,7 @@ export function AdminReference() {
                 {items.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="text-xs font-medium">{item.name}</TableCell>
-                    <TableCell className="text-xs">{CATEGORY_LABELS[item.category] || item.category}</TableCell>
+                    <TableCell className="text-xs">{categories.find(c => c.id === item.category)?.name || item.category}</TableCell>
                     <TableCell className="text-xs text-right">{formatCurrency(item.refPrice)}</TableCell>
                     <TableCell className="text-xs text-right">{formatCurrency(item.minPrice)}</TableCell>
                     <TableCell className="text-xs text-right">{item.margin}%</TableCell>
@@ -232,7 +238,7 @@ export function AdminReference() {
               <Label>Categoria *</Label>
               <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{CATEGORY_OPTIONS.map((c) => (<SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>))}</SelectContent>
+                <SelectContent>{categories.length === 0 ? <SelectItem value="no-categories" disabled>Sem categorias cadastradas</SelectItem> : categories.map((c) => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}</SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-3 gap-3">

@@ -94,6 +94,16 @@ model ReferenceItem {
   updatedAt     DateTime @updatedAt
 }
 
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  order       Int      @default(0)
+  status      String   @default("ativo") // ativo, inativo
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model OfferRule {
   id           String   @id @default(cuid())
   minRange     Float    @default(0)

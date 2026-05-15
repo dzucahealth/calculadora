@@ -9,6 +9,7 @@ export type ViewType =
   | 'admin-dashboard'
   | 'admin-leads'
   | 'admin-lead-detail'
+  | 'admin-categories'
   | 'admin-reference'
   | 'admin-offer-rules'
   | 'admin-privacy';

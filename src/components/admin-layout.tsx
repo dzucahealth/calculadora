@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   ChevronLeft,
+  Tags,
 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -26,7 +27,8 @@ interface AdminLayoutProps {
 const NAV_ITEMS: { icon: typeof LayoutDashboard; label: string; view: ViewType }[] = [
   { icon: LayoutDashboard, label: 'Dashboard', view: 'admin-dashboard' },
   { icon: Users, label: 'Leads', view: 'admin-leads' },
-  { icon: BookOpen, label: 'Referência Comercial', view: 'admin-reference' },
+  { icon: Tags, label: 'Categorias', view: 'admin-categories' },
+  { icon: BookOpen, label: 'Itens de Referência', view: 'admin-reference' },
   { icon: Gift, label: 'Regras de Oferta', view: 'admin-offer-rules' },
   { icon: Shield, label: 'Política de Privacidade', view: 'admin-privacy' },
 ];

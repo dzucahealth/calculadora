@@ -11,6 +11,7 @@ import { AdminDashboard } from '@/components/admin-dashboard';
 import { AdminLeads } from '@/components/admin-leads';
 import { AdminLeadDetail } from '@/components/admin-lead-detail';
 import { AdminReference } from '@/components/admin-reference';
+import { AdminCategories } from '@/components/admin-categories';
 import { AdminOfferRules } from '@/components/admin-offer-rules';
 import { PrivacyPolicy } from '@/components/privacy-policy';
 
@@ -48,6 +49,7 @@ export default function Home() {
         case 'admin-dashboard': return <AdminDashboard />;
         case 'admin-leads': return <AdminLeads />;
         case 'admin-lead-detail': return <AdminLeadDetail />;
+        case 'admin-categories': return <AdminCategories />;
         case 'admin-reference': return <AdminReference />;
         case 'admin-offer-rules': return <AdminOfferRules />;
         case 'admin-privacy': return <PrivacyPolicy />;
